@@ -1,0 +1,554 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ข้อมูลสถานที่ท่องเที่ยว - Songkhla Vibe</title>
+    
+    <link href="https://fonts.googleapis.com/css2?family=Prompt:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="icon" href="images/songkhla1.png">
+    
+    <script src="config.js"></script>
+    <script>
+        // ป้องกันหน้าจอขาววาบ (Flash of Light Mode)
+        (function() {
+            const savedTheme = localStorage.getItem('theme') || 'light';
+            document.documentElement.setAttribute('data-theme', savedTheme);
+        })();
+    </script>
+
+    <style>
+        /* ==================== 🛠️ CSS Variables (ตรงกับ index.html เป๊ะ) ==================== */
+        :root {
+            --bg-color: #F8FAFC;
+            --primary-blue: #1E40AF;
+            --secondary-blue: #60A5FA;
+            --text-dark: #1E293B;
+            --text-light: #64748B;
+            --white: #FFFFFF;
+            --card-border: #F1F5F9;
+            --nav-bg: rgba(255, 255, 255, 0.9);
+            --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            --shadow: 0 10px 30px rgba(0,0,0,0.05);
+        }
+
+        [data-theme="dark"] {
+            --bg-color: #0F172A;
+            --primary-blue: #3B82F6;
+            --secondary-blue: #93C5FD;
+            --text-dark: #F8FAFC;
+            --text-light: #94A3B8;
+            --white: #1E293B;
+            --card-border: #334155;
+            --nav-bg: rgba(15, 23, 42, 0.9);
+            --shadow: 0 10px 30px rgba(0,0,0,0.3);
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Prompt', sans-serif; }
+        body { background-color: var(--bg-color); color: var(--text-dark); transition: var(--transition); line-height: 1.6; padding-top: 80px; }
+
+        /* ==================== 🌐 Navigation (สมูทเหมือนหน้าแรก) ==================== */
+        header { 
+            position: fixed; top: 0; left: 0; width: 100%; 
+            background-color: var(--nav-bg); backdrop-filter: blur(10px); 
+            border-bottom: 1px solid var(--card-border); z-index: 1000; transition: var(--transition); 
+        }
+        .nav-container { 
+            max-width: 1200px; margin: 0 auto; padding: 1.2rem 2rem; 
+            display: flex; justify-content: space-between; align-items: center; 
+        }
+        .logo { 
+            font-size: 1.6rem; font-weight: 700; color: var(--primary-blue); 
+            text-decoration: none; display: flex; align-items: center; gap: 0.6rem; 
+        }
+        
+        .nav-menu { display: flex; align-items: center; gap: 2.5rem; list-style: none; }
+        .nav-link { 
+            color: var(--text-dark); text-decoration: none; font-size: 1.05rem; 
+            transition: var(--transition); font-weight: 500; position: relative;
+        }
+        .nav-link:hover { color: var(--primary-blue); }
+        .nav-link.active { color: var(--primary-blue); }
+        .nav-link.active::after {
+            content: ''; position: absolute; bottom: -5px; left: 0; 
+            width: 100%; height: 2px; background: var(--primary-blue); border-radius: 2px;
+        }
+
+        .nav-controls { display: flex; align-items: center; gap: 1.2rem; }
+        .theme-toggle, .lang-toggle { 
+            background: var(--white); border: 1px solid var(--card-border); color: var(--text-dark); 
+            padding: 0.6rem 0.9rem; border-radius: 12px; cursor: pointer; transition: var(--transition);
+            box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+        }
+        .theme-toggle:hover { transform: translateY(-2px); box-shadow: var(--shadow); }
+        .mobile-menu-btn { display: none; background: none; border: none; color: var(--text-dark); font-size: 1.5rem; cursor: pointer; }
+
+        @media (max-width: 768px) {
+            .mobile-menu-btn { display: block; }
+            .nav-menu { 
+                position: fixed; top: 80px; left: -100%; width: 100%; height: calc(100vh - 80px); 
+                background-color: var(--bg-color); flex-direction: column; padding-top: 3rem; gap: 2rem; transition: 0.4s ease; 
+            }
+            .nav-menu.active { left: 0; }
+            .nav-controls .lang-toggle { display: none; }
+        }
+
+        /* ==================== 📍 Content & Grid ==================== */
+        .page-header { text-align: center; padding: 40px 20px 20px; }
+        .page-header h1 { font-size: 2.5rem; color: var(--primary-blue); margin-bottom: 10px; }
+        
+        .filter-container { max-width: 1200px; margin: 20px auto 40px; padding: 0 20px; text-align: center; }
+        .filter-btn { 
+            padding: 10px 22px; margin: 5px; border-radius: 30px; cursor: pointer;
+            background: var(--white); color: var(--text-dark); border: 1px solid var(--card-border); 
+            transition: 0.3s; font-weight: 500; box-shadow: var(--shadow);
+        }
+        .filter-btn:hover { background: var(--bg-color); }
+        .filter-btn.active { background: var(--primary-blue); color: white; border-color: var(--primary-blue); }
+
+        .attractions-grid { 
+            max-width: 1200px; margin: 0 auto 100px; padding: 20px;
+            display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 30px; 
+        }
+        .card { 
+            background: var(--white); border-radius: 20px; overflow: hidden; 
+            border: 1px solid var(--card-border); box-shadow: var(--shadow); transition: 0.4s;
+            display: flex; flex-direction: column;
+        }
+        .card:hover { transform: translateY(-10px); box-shadow: 0 20px 40px rgba(0,0,0,0.1); }
+        .card-img { width: 100%; height: 220px; object-fit: cover; border-bottom: 1px solid var(--card-border); }
+        .card-body { padding: 25px; flex-grow: 1; display: flex; flex-direction: column; }
+        .tag { display: inline-block; padding: 4px 12px; background: rgba(30, 64, 175, 0.1); color: var(--primary-blue); border-radius: 12px; font-size: 0.8rem; font-weight: 600; text-transform: uppercase; margin-bottom: 10px; align-self: flex-start; }
+        .card-body h3 { font-size: 1.3rem; margin-bottom: 10px; color: var(--text-dark); }
+        .card-body p { color: var(--text-light); font-size: 0.95rem; margin-bottom: 15px; flex-grow: 1; }
+        
+        /* ==================== 💬 FLOATING AI CHAT WIDGET (ปรับปรุงตำแหน่งทับกันแล้ว) ==================== */
+        .floating-chat-widget { 
+            position: fixed; 
+            bottom: 2rem; 
+            right: 2rem; 
+            z-index: 2000; 
+            display: block; /* เปลี่ยนเป็น Block เพื่อใช้ Absolute ภายในจัดการตำแหน่ง */
+        }
+        
+        .chat-trigger-btn { 
+            width: 65px; 
+            height: 65px; 
+            border-radius: 50%; 
+            background-color: var(--primary-blue); 
+            color: white; 
+            border: none; 
+            cursor: pointer; 
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2); 
+            display: flex; 
+            align-items: center; 
+            justify-content: center; 
+            font-size: 1.8rem; 
+            transition: transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275), background-color 0.2s; 
+            position: relative;
+            z-index: 2002; /* ให้อยู่เหนือหน้าต่างแชทเพื่อกดปิด/เปิด ได้ถนัด */
+        }
+        .chat-trigger-btn:hover { transform: scale(1.08); background-color: var(--secondary-blue); }
+        .chat-trigger-btn i { transition: transform 0.3s ease; }
+        
+        /* แก้ไขตรงนี้: สั่งให้หน้าต่างแชท (กรอบสีเขียว) วางทับอยู่เหนือปุ่ม (กรอบสีแดง) พอดีตอนกางเปิด */
+        .chat-window { 
+            position: absolute;
+            bottom: 0;
+            right: 0;
+            width: 370px; 
+            height: 500px; 
+            background-color: var(--white); 
+            border-radius: 20px; 
+            border: 1px solid var(--card-border); 
+            box-shadow: var(--shadow); 
+            display: flex; 
+            flex-direction: column; 
+            overflow: hidden; 
+            transform: scale(0.1) translateY(40px); /* ยุบลงหาตัวปุ่มสีแดง */
+            transform-origin: bottom right; 
+            opacity: 0; 
+            pointer-events: none; 
+            transition: transform 0.4s cubic-bezier(0.34, 1.56, 0.64, 1), opacity 0.2s; 
+            z-index: 2001;
+        }
+        
+        /* สเตตัสเมื่อเปิดใช้งาน คลี่หน้าต่างออกมาบังปุ่มเปิดด้านหลังแบบมีมิติ */
+        .floating-chat-widget.open .chat-window { 
+            transform: scale(1) translateY(0); 
+            opacity: 1; 
+            pointer-events: auto; 
+        }
+        .floating-chat-widget.open .chat-trigger-btn { 
+            background-color: #EF4444; 
+            box-shadow: none; /* เอาเงาออกเพื่อให้เนียนกลืนไปกับหัวกล่องข้อความ */
+            position: absolute;
+            bottom: unset;
+            top: 7px;     /* ดึงเข้าไปจัดแนววางบนแถบ Header แชท */
+            right: 12px;
+            width: 40px;   /* ย่อปุ่มให้เล็กลงพอดีกับดีไซน์แผงปิดกล่อง */
+            height: 40px;
+            font-size: 1.2rem;
+        }
+        
+        @media (max-width: 480px) { 
+            .floating-chat-widget { bottom: 1rem; right: 1rem; left: 1rem; } 
+            .chat-window { width: 100%; height: calc(100vh - 120px); } 
+            .floating-chat-widget.open .chat-trigger-btn { top: 12px; right: 16px; }
+        }
+
+        .chat-header { padding: 1.1rem 1.5rem; border-bottom: 1px solid var(--card-border); display: flex; align-items: center; justify-content: space-between; background-color: var(--white); }
+        .chat-header-left { display: flex; align-items: center; gap: 0.75rem; }
+        .chat-status { width: 9px; height: 9px; background-color: #10B981; border-radius: 50%; box-shadow: 0 0 0 3px rgba(16, 185, 129, 0.2); }
+        .chat-title { font-weight: 600; font-size: 1rem; margin-right: 45px; } /* ขยับพื้นที่หลบให้ปุ่มวงกลมสีแดง */
+
+        .chat-messages { flex-grow: 1; padding: 1.5rem; overflow-y: auto; display: flex; flex-direction: column; gap: 1rem; background-color: var(--bg-color); }
+        .message { max-width: 85%; padding: 0.75rem 1rem; border-radius: 16px; font-size: 0.9rem; line-height: 1.5; word-wrap: break-word; }
+        .user-message { background-color: var(--primary-blue); color: white; align-self: flex-end; border-bottom-right-radius: 4px; box-shadow: 0 2px 5px rgba(30, 64, 175, 0.1); }
+        /* ตกแต่งลิงก์/ปุ่ม Google Maps ที่ AI ส่งมาให้เป็นกรอบมินิมอล */
+        .ai-message a {display: inline-flex;align-items: center;gap: 6px;margin-top: 8px;padding: 6px 14px;background-color: var(--white);color: var(--primary-blue);border: 1px solid #CBD5E1; /* เส้นขอบสีเทาอ่อน สไตล์มินิมอล */border-radius: 8px;        /* ความโค้งมนมนพอดี */text-decoration: none;     /* เอาเส้นใต้ข้อความออก */font-size: 0.85rem;font-weight: 500;transition: var(--transition);}
+        /* เอฟเฟกต์ตอนเอาเมาส์ไปชี้ (Hover) */
+        .ai-message a:hover {background-color: #F1F5F9;border-color: var(--primary-blue); /* เปลี่ยนสีขอบเป็นสีน้ำเงินหลักตอนชี้ */color: var(--primary-blue);transform: translateY(-1px);      /* ขยับขึ้นเล็กน้อยเพิ่มมิติ */}
+        .chat-input-area { padding: 1rem; border-top: 1px solid var(--card-border); display: flex; gap: 0.5rem; background-color: var(--white); }
+        .chat-input { flex-grow: 1; border: 1px solid var(--card-border); padding: 0.75rem 1rem; border-radius: 12px; font-size: 0.9rem; outline: none; background-color: var(--bg-color); color: var(--text-dark); transition: var(--transition); }
+        .chat-input:focus { border-color: var(--primary-blue); background-color: var(--white); }
+        .send-btn { background-color: var(--primary-blue); color: white; border: none; width: 45px; height: 45px; border-radius: 12px; cursor: pointer; display: flex; align-items: center; justify-content: center; font-size: 1rem; transition: var(--transition); }
+        .send-btn:hover { opacity: 0.9; }
+
+        
+        /* Footer */
+        footer { text-align: center; padding: 30px; color: var(--text-light); border-top: 1px solid var(--card-border); background: var(--white); }
+    </style>
+</head>
+<body>
+
+    <header>
+        <div class="nav-container">
+            <a href="index.html" class="logo">
+                <i class="fa-solid fa-water"></i> Songkhla Vibe
+            </a>
+            <ul class="nav-menu" id="navMenu">
+                <li><a href="index.html" class="nav-link active" id="menuHome">หน้าแรก</a></li>
+                <li><a href="smart-travel.html" class="nav-link" id="menuSmartTravel">พิกัดเที่ยวอัจฉริยะ</a></li>
+                <li><a href="attractions.html" class="nav-link" id="menuAttractions">สถานที่ท่องเที่ยว</a></li>
+                <li><a href="about.html" class="nav-link active" id="menuAbout">ประวัติเมือง</a></li>
+                <li><a href="contact.html" class="nav-link" id="menuContact">ติดต่อเรา</a></li>
+            </ul>
+            <div class="nav-controls">
+                <button class="theme-toggle" onclick="toggleTheme()" title="เปลี่ยนโหมด">
+                    <i class="fa-solid fa-moon" id="themeIcon"></i>
+                </button>
+                <button class="lang-toggle">EN</button>
+                <button class="mobile-menu-btn" onclick="toggleMobileMenu()">
+                    <i class="fa-solid fa-bars-staggered" id="menuIcon"></i>
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <div class="page-header">
+        <h1>สถานที่ท่องเที่ยวทั้งหมด</h1>
+        <p>รวบรวม 18 จุดเช็คอินยอดฮิตที่คุณไม่ควรพลาดเมื่อมาเยือนสงขลา</p>
+    </div>
+
+    <div class="filter-container">
+        <button class="filter-btn active" onclick="filterItems('all', this)">ทั้งหมด</button>
+        <button class="filter-btn" onclick="filterItems('nature', this)">ธรรมชาติ (Nature)</button>
+        <button class="filter-btn" onclick="filterItems('culture', this)">วัฒนธรรม (Culture)</button>
+        <button class="filter-btn" onclick="filterItems('food', this)">ของกิน (Food/Lifestyle)</button>
+    </div>
+
+    <main class="attractions-grid">
+        
+        <div class="card" data-category="nature">
+            <img src="images/19281_0.jpg" class="card-img" alt="หาดสมิหลา">
+            <div class="card-body">
+                <span class="tag"><i class="fa-solid fa-leaf"></i> Nature</span>
+                <h3>หาดสมิหลา</h3>
+                <p>แลนด์มาร์คอันดับหนึ่งของสงขลา โดดเด่นด้วยรูปปั้นนางเงือกทองคำ ทรายขาวสะอาด และทิวทัศน์ของเกาะหนูเกาะแมว</p>
+            </div>
+        </div>
+        <div class="card" data-category="nature">
+            <img src="images/49419805.jpg" class="card-img" alt="หาดชลาทัศน์">
+            <div class="card-body">
+                <span class="tag"><i class="fa-solid fa-leaf"></i> Nature</span>
+                <h3>หาดชลาทัศน์</h3>
+                <p>ชายหาดที่ทอดยาวต่อเนื่องจากหาดสมิหลา ร่มรื่นด้วยทิวสน เหมาะแก่การพักผ่อนและปั่นจักรยานริมทะเล</p>
+            </div>
+        </div>
+        <div class="card" data-category="nature">
+            <img src="images/83663528.jpg" class="card-img" alt="เขาตังกวน">
+            <div class="card-body">
+                <span class="tag"><i class="fa-solid fa-leaf"></i> Nature</span>
+                <h3>เขาตังกวน</h3>
+                <p>จุดชมวิวเมืองสงขลาแบบ 360 องศา สามารถขึ้นด้วยลิฟต์หรือเดินขึ้นบันไดพญานาค บนยอดเขามีเจดีย์หลวงคู่เมือง</p>
+            </div>
+        </div>
+        <div class="card" data-category="nature">
+            <img src="images/19303_0.jpg" class="card-img" alt="ทะเลสาบสงขลา">
+            <div class="card-body">
+                <span class="tag"><i class="fa-solid fa-leaf"></i> Nature</span>
+                <h3>ทะเลสาบสงขลา</h3>
+                <p>ทะเลสาบแห่งเดียวในประเทศไทย สัมผัสวิถีชีวิตชาวประมงพื้นบ้าน และชมความงามของสะพานติณสูลานนท์</p>
+            </div>
+        </div>
+        <div class="card" data-category="nature">
+            <img src="images/19287_0.jpg" class="card-img" alt="เกาะยอ">
+            <div class="card-body">
+                <span class="tag"><i class="fa-solid fa-leaf"></i> Nature</span>
+                <h3>เกาะยอ</h3>
+                <p>แหล่งท่องเที่ยวเชิงเกษตรและวัฒนธรรม มีชื่อเสียงเรื่องผ้าทอเกาะยอและร้านอาหารทะเลวิวสวย</p>
+            </div>
+        </div>
+        <div class="card" data-category="nature">
+            <img src="images/565656.jpg" class="card-img" alt="สวนสาธารณะเทศบาลนครหาดใหญ่">
+            <div class="card-body">
+                <span class="tag"><i class="fa-solid fa-leaf"></i> Nature</span>
+                <h3>สวนสาธารณะหาดใหญ่</h3>
+                <p>ปอดของเมืองหาดใหญ่ มีกระเช้าลอยฟ้า (Cable Car) แห่งแรกของไทย และสิ่งศักดิ์สิทธิ์บนยอดเขาคอหงส์</p>
+            </div>
+        </div>
+
+        <div class="card" data-category="culture">
+            <img src="images/19298_0.jpg" class="card-img" alt="ย่านเมืองเก่าสงขลา">
+            <div class="card-body">
+                <span class="tag"><i class="fa-solid fa-landmark"></i> Culture</span>
+                <h3>ย่านเมืองเก่าสงขลา</h3>
+                <p>เดินชมสถาปัตยกรรมชิโนโปรตุกีสบนถนนนครใน นครนอก และถนนนางงาม พร้อมถ่ายรูปกับสตรีทอาร์ตเก๋ๆ</p>
+            </div>
+        </div>
+        <div class="card" data-category="culture">
+            <img src="images/789456.jpg" class="card-img" alt="มัสยิดกลางสงขลา">
+            <div class="card-body">
+                <span class="tag"><i class="fa-solid fa-landmark"></i> Culture</span>
+                <h3> มัสยิดกลางประจำจังหวัด</h3>
+                <p>ได้รับการขนานนามว่า "ทัชมาฮาลเมืองไทย" มีสระน้ำทอดยาวด้านหน้า ช่วงพระอาทิตย์ตกดินจะสวยงามมาก</p>
+            </div>
+        </div>
+        <div class="card" data-category="culture">
+            <img src="images/19301_0.jpg" class="card-img" alt="พิพิธภัณฑสถานแห่งชาติ สงขลา">
+            <div class="card-body">
+                <span class="tag"><i class="fa-solid fa-landmark"></i> Culture</span>
+                <h3>พิพิธภัณฑสถานแห่งชาติ</h3>
+                <p>อาคารสถาปัตยกรรมแบบจีน-ยุโรป อดีตเคยเป็นคฤหาสน์ผู้ช่วยเจ้าเมือง จัดแสดงโบราณวัตถุและประวัติศาสตร์สงขลา</p>
+            </div>
+        </div>
+        <div class="card" data-category="culture">
+            <img src="images/354848.jpg" class="card-img" alt="วัดมัชฌิมาวาส">
+            <div class="card-body">
+                <span class="tag"><i class="fa-solid fa-landmark"></i> Culture</span>
+                <h3>วัดมัชฌิมาวาส (วัดกลาง)</h3>
+                <p>วัดเก่าแก่ที่สุดในตัวเมืองสงขลา ภายในมีพิพิธภัณฑ์ภัทรศิลปที่เก็บรวบรวมโบราณวัตถุล้ำค่ามากมาย</p>
+            </div>
+        </div>
+        <div class="card" data-category="culture">
+            <img src="images/87324.jpg" class="card-img" alt="ศาลเจ้าพ่อหลักเมืองสงขลา">
+            <div class="card-body">
+                <span class="tag"><i class="fa-solid fa-landmark"></i> Culture</span>
+                <h3>ศาลเจ้าพ่อหลักเมือง</h3>
+                <p>สิ่งศักดิ์สิทธิ์คู่บ้านคู่เมือง สถาปัตยกรรมศาลเจ้าแบบจีน ศูนย์รวมจิตใจของชาวไทยเชื้อสายจีนในสงขลา</p>
+            </div>
+        </div>
+        <div class="card" data-category="culture">
+            <img src="images/6321475.jpg" class="card-img" alt="วัดพะโคะ">
+            <div class="card-body">
+                <span class="tag"><i class="fa-solid fa-landmark"></i> Culture</span>
+                <h3>วัดพะโคะ (หลวงปู่ทวด)</h3>
+                <p>วัดสำคัญในประวัติศาสตร์และเป็นสถานที่จำพรรษาของสมเด็จเจ้าพะโคะ หรือ หลวงปู่ทวดเหยียบน้ำทะเลจืด</p>
+            </div>
+        </div>
+
+        <div class="card" data-category="food">
+            <img src="images/19283_0.jpg" class="card-img" alt="ตลาดกิมหยง">
+            <div class="card-body">
+                <span class="tag"><i class="fa-solid fa-utensils"></i> Food</span>
+                <h3>ตลาดกิมหยง</h3>
+                <p>แหล่งละลายทรัพย์ชื่อดังของหาดใหญ่ เต็มไปด้วยของฝาก ขนมนำเข้า ถั่ว ผลไม้อบแห้ง และสินค้าราคาถูก</p>
+            </div>
+        </div>
+        <div class="card" data-category="food">
+            <img src="images/648814724.jpg" class="card-img" alt="ถนนนางงาม">
+            <div class="card-body">
+                <span class="tag"><i class="fa-solid fa-utensils"></i> Food</span>
+                <h3>ถนนนางงาม </h3>
+                <p>แหล่งรวมของอร่อยดั้งเดิม ทั้งไอศกรีมโอ่ง ขนมสัมปันนี ซาลาเปาลูกใหญ่ และข้าวสตูร้านดัง</p>
+            </div>
+        </div>
+        <div class="card" data-category="food">
+            <img src="images/19309_0.jpg" class="card-img" alt="ตลาดน้ำคลองแห">
+            <div class="card-body">
+                <span class="tag"><i class="fa-solid fa-utensils"></i> Food</span>
+                <h3>ตลาดน้ำคลองแห</h3>
+                <p>ตลาดน้ำเชิงวัฒนธรรมแห่งแรกของภาคใต้ แม่ค้าพายเรือขายอาหารพื้นบ้านและใช้ภาชนะธรรมชาติ</p>
+            </div>
+        </div>
+        <div class="card" data-category="food">
+            <img src="images/091C12E480.jpg" class="card-img" alt="ไก่ทอดหาดใหญ่">
+            <div class="card-body">
+                <span class="tag"><i class="fa-solid fa-utensils"></i> Food</span>
+                <h3>ไก่ทอดหาดใหญ่ต้นตำรับ</h3>
+                <p>มาถึงสงขลาต้องไม่พลาดชิมไก่ทอดหาดใหญ่กรอบนอกนุ่มใน เสิร์ฟพร้อมหอมเจียวและข้าวเหนียวร้อนๆ</p>
+            </div>
+        </div>
+        <div class="card" data-category="food">
+            <img src="images/12032024155032.jpg" class="card-img" alt="คาเฟ่เมืองเก่า">
+            <div class="card-body">
+                <span class="tag"><i class="fa-solid fa-mug-hot"></i> Food</span>
+                <h3>คาเฟ่ย่านเมืองเก่า</h3>
+                <p>นั่งชิลล์ในคาเฟ่ที่ดัดแปลงจากตึกเก่าชิโนโปรตุกีส จิบกาแฟพร้อมซึมซับบรรยากาศสุดคลาสสิก</p>
+            </div>
+        </div>
+        <div class="card" data-category="food">
+            <img src="images/475062148.jpg" class="card-img" alt="ติ่มซำหาดใหญ่">
+            <div class="card-body">
+                <span class="tag"><i class="fa-solid fa-utensils"></i> Food</span>
+                <h3>ติ่มซำยามเช้า</h3>
+                <p>วิถีชีวิตคนท้องถิ่นกับการทานอาหารเช้าสไตล์คนจีน เลือกติ่มซำนึ่งสดใหม่ บักกุ๊ดเต๋ และชาชัก</p>
+            </div>
+        </div>
+
+    </main>
+
+    <div class="floating-chat-widget" id="chatWidget">
+        <div class="chat-window">
+            <div class="chat-header">
+                <div class="chat-header-left">
+                    <div class="chat-status"></div>
+                    <div class="chat-title">Thitipong AI Guide</div>
+                </div>
+                </div>
+            <div class="chat-messages" id="chatMessages">
+                <div class="message ai-message">
+                    สวัสดีครับ! ผมคือ <b>Thitipong AI Guide</b> ไกด์ท้องถิ่นของสงขลา 🌊 สามารถสืบค้นข้อมูลที่กินที่เที่ยวอัปเดตใหม่ได้ทันที อยากให้ผมช่วยจัดทริปหรือแนะนำมุมถ่ายรูปสวยๆ พิมพ์มาคุยกันได้เลยครับน่ะ!
+                </div>
+            </div>
+            <div class="chat-input-area">
+                <input type="text" class="chat-input" id="userInput" placeholder="พิมพ์ข้อความคำถามที่นี่...">
+                <button class="send-btn" id="sendBtn"><i class="fa-solid fa-paper-plane"></i></button>
+            </div>
+        </div>
+        <button class="chat-trigger-btn" onclick="toggleChat()" title="คุยกับ AI ไกด์สงขลา">
+            <i class="fa-solid fa-comments" id="chatIcon"></i>
+        </button>
+    </div>
+
+    <footer>
+        <p>© 2026 Songkhla Vibe - วิทยาลัยอาชีวศึกษาสงขลา. All Rights Reserved.</p>
+    </footer>
+
+    <script>
+        // ==================== 🛠️ JavaScript ควบคุมระบบ ====================
+        function initTheme() {
+            const savedTheme = localStorage.getItem('theme') || 'light';
+            document.documentElement.setAttribute('data-theme', savedTheme);
+            const icon = document.getElementById('themeIcon');
+            if (icon) {
+                icon.className = savedTheme === 'dark' ? 'fa-solid fa-sun' : 'fa-solid fa-moon';
+            }
+        }
+
+        function toggleTheme() {
+            const currentTheme = document.documentElement.getAttribute('data-theme') || 'light';
+            const newTheme = currentTheme === 'light' ? 'dark' : 'light';
+            document.documentElement.setAttribute('data-theme', newTheme);
+            localStorage.setItem('theme', newTheme);
+            const icon = document.getElementById('themeIcon');
+            if (icon) {
+                icon.className = newTheme === 'dark' ? 'fa-solid fa-sun' : 'fa-solid fa-moon';
+            }
+        }
+
+        function toggleMobileMenu() {
+            const menu = document.getElementById('navMenu');
+            const icon = document.getElementById('menuIcon');
+            menu.classList.toggle('active');
+            if (icon) {
+                icon.className = menu.classList.contains('active') ? 'fa-solid fa-xmark' : 'fa-solid fa-bars-staggered';
+            }
+        }
+
+        function filterItems(category, btn) {
+            // สลับสถานะปุ่ม
+            document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+            btn.classList.add('active');
+            
+            // ซ่อน/แสดงการ์ดตามหมวดหมู่
+            const cards = document.querySelectorAll('.card');
+            cards.forEach(card => {
+                if (category === 'all' || card.getAttribute('data-category') === category) {
+                    card.style.display = 'flex'; // ใช้ flex เพื่อให้ card-body ยืดเต็มความสูง
+                } else {
+                    card.style.display = 'none';
+                }
+            });
+        }
+        // ==================== ฟังก์ชันควบคุมกล่องแชททับซ้อน ====================
+        function toggleChat() {
+            const widget = document.getElementById('chatWidget');
+            const icon = document.getElementById('chatIcon');
+            widget.classList.toggle('open');
+            if (widget.classList.contains('open')) {
+                icon.className = 'fa-solid fa-xmark';
+                setTimeout(() => { document.getElementById('userInput').focus(); }, 400);
+            } else {
+                icon.className = 'fa-solid fa-comments';
+            }
+        }
+
+        // ==================== การส่งข้อความแชท AI หลังบ้าน ====================
+        const chatMessages = document.getElementById('chatMessages');
+        const userInput = document.getElementById('userInput');
+        const sendBtn = document.getElementById('sendBtn');
+
+        async function handleSendMessage() {
+            const text = userInput.value.trim();
+            if(!text) return;
+
+            const userDiv = document.createElement('div');
+            userDiv.className = 'message user-message';
+            userDiv.innerText = text;
+            chatMessages.appendChild(userDiv);
+            userInput.value = '';
+            chatMessages.scrollTop = chatMessages.scrollHeight;
+
+            const typingId = 'typing-' + Date.now();
+            const typingDiv = document.createElement('div');
+            typingDiv.className = 'message ai-message';
+            typingDiv.id = typingId;
+            typingDiv.innerHTML = '<i class="fa-solid fa-circle-notch fa-spin"></i> กำลังคิดหาข้อมูล...';
+            chatMessages.appendChild(typingDiv);
+            chatMessages.scrollTop = chatMessages.scrollHeight;
+
+            try {
+                const response = await fetch(API_BASE_URL + '/api/chat', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ message: text })
+                });
+                const data = await response.json();
+                document.getElementById(typingId).remove();
+
+                const aiDiv = document.createElement('div');
+                aiDiv.className = 'message ai-message';
+                aiDiv.innerHTML = data.reply;
+                chatMessages.appendChild(aiDiv);
+            } catch (error) {
+                document.getElementById(typingId).remove();
+                const errDiv = document.createElement('div');
+                errDiv.className = 'message ai-message';
+                errDiv.innerHTML = '⚠️ ไม่สามารถเชื่อมต่อกับ AI ได้ กรุณาตรวจสอบว่าเซิร์ฟเวอร์เปิดใช้งานอยู่';
+                chatMessages.appendChild(errDiv);
+            }
+            chatMessages.scrollTop = chatMessages.scrollHeight;
+        }
+
+        sendBtn.addEventListener('click', handleSendMessage);
+        userInput.addEventListener('keypress', (e) => { if (e.key === 'Enter') handleSendMessage(); });
+
+        
+        // โหลดธีมทันทีที่เปิดหน้า
+        document.addEventListener('DOMContentLoaded', initTheme);
+    </script>
+</body>
+</html>

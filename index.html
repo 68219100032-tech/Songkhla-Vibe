@@ -1,0 +1,468 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Songkhla Vibe - เที่ยวสงขลา</title>
+
+    <link href="https://fonts.googleapis.com/css2?family=Prompt:wght@300;400;500;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="icon" href="images/songkhla1.png">
+
+    <style>
+        /* ==================== 🛠️ CSS Variables สำหรับสลับโหมด ==================== */
+        :root {
+            --bg-color: #F8FAFC;
+            --primary-blue: #1E40AF;
+            --secondary-blue: #60A5FA;
+            --text-dark: #1E293B;
+            --text-light: #64748B;
+            --white: #FFFFFF;
+            --card-border: #F1F5F9;
+            --nav-bg: rgba(255, 255, 255, 0.9);
+            --transition: all 0.3s ease-in-out;
+            --shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1), 0 8px 10px -6px rgba(0, 0, 0, 0.1);
+        }
+
+        [data-theme="dark"] {
+            --bg-color: #0F172A;
+            --primary-blue: #3B82F6;
+            --secondary-blue: #93C5FD;
+            --text-dark: #F1F5F9;
+            --text-light: #94A3B8;
+            --white: #1E293B;
+            --card-border: #334155;
+            --nav-bg: rgba(15, 23, 42, 0.9);
+            --shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.3), 0 10px 10px -5px rgba(0, 0, 0, 0.3);
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Prompt', sans-serif; }
+        html { scroll-behavior: smooth; scroll-padding-top: 88px; }
+        body { background-color: var(--bg-color); color: var(--text-dark); transition: var(--transition); overflow-x: hidden; -webkit-font-smoothing: antialiased; text-rendering: optimizeLegibility; }
+
+        /* ==================== 🗺️ การตกแต่งแถบเมนู (Navbar) ==================== */
+        header { position: fixed; top: 0; left: 0; width: 100%; background-color: color-mix(in srgb, var(--nav-bg) 88%, transparent); backdrop-filter: blur(18px) saturate(135%); -webkit-backdrop-filter: blur(18px) saturate(135%); border-bottom: 1px solid var(--card-border); box-shadow: 0 8px 30px rgba(15, 23, 42, 0.06); z-index: 1000; transition: var(--transition); }
+        .nav-container { max-width: 1200px; margin: 0 auto; padding: 1rem 2rem; min-height: 72px; display: flex; justify-content: space-between; align-items: center; }
+        .logo { font-size: 1.4rem; font-weight: 600; color: var(--primary-blue); text-decoration: none; display: flex; align-items: center; gap: 0.5rem; transition: transform .35s cubic-bezier(.22,1,.36,1); }
+        .logo:hover { transform: translateY(-2px); }
+        .nav-menu { display: flex; align-items: center; gap: 2rem; list-style: none; }
+        .nav-link { position: relative; color: var(--text-dark); text-decoration: none; font-size: 1rem; font-weight: 400; padding: .45rem .1rem; transition: var(--transition); }
+        .nav-link:hover, .nav-link.active { color: var(--primary-blue); }
+        .nav-link::after { content: ""; position: absolute; left: 50%; bottom: -3px; width: 0; height: 2px; border-radius: 999px; background: var(--primary-blue); transform: translateX(-50%); transition: width .35s cubic-bezier(.22,1,.36,1); }
+        .nav-link:hover::after, .nav-link.active::after { width: 70%; }
+
+        .nav-controls { display: flex; align-items: center; gap: 1rem; }
+        .theme-toggle, .lang-toggle { background: none; border: 1px solid var(--card-border); color: var(--text-dark); padding: 0.5rem 0.8rem; border-radius: 8px; cursor: pointer; font-size: 0.9rem; display: flex; align-items: center; gap: 0.4rem; transition: transform .3s cubic-bezier(.22,1,.36,1), border-color .3s ease, color .3s ease, box-shadow .3s ease; background-color: var(--white); }
+        .theme-toggle:hover, .lang-toggle:hover { border-color: var(--primary-blue); color: var(--primary-blue); transform: translateY(-2px); box-shadow: 0 8px 20px rgba(30, 64, 175, .10); }
+
+        .mobile-menu-btn { display: none; background: none; border: none; color: var(--text-dark); font-size: 1.4rem; cursor: pointer; }
+        @media (max-width: 768px) {
+            .mobile-menu-btn { display: block; }
+            .nav-container { min-height: 68px; }
+            .nav-menu { position: fixed; top: 70px; left: -100%; width: 100%; height: calc(100vh - 70px); background-color: var(--bg-color); flex-direction: column; align-items: center; padding-top: 3rem; gap: 2.5rem; transition: 0.3s ease-in-out; border-top: 1px solid var(--card-border); }
+            .nav-menu.active { left: 0; }
+            .lang-toggle span { display: none; }
+        }
+
+        /* ==================== HERO SECTION ==================== */
+        .hero-section { position: relative; height: 100vh; min-height: 100svh; width: 100%; display: flex; align-items: center; justify-content: center; text-align: center; color: white; overflow: hidden; margin-top: 0; }
+        .hero-bg-slider { position: absolute; top: 0; left: 0; width: 100%; height: 100%; background-size: cover; background-position: center; transition: background-image 2s ease-in-out; z-index: 1; transform: scale(1.015); will-change: transform, background-image; animation: heroKenBurns 14s ease-in-out infinite alternate; }
+        .hero-overlay { position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: linear-gradient(to bottom, rgba(15, 23, 42, .34), rgba(15, 23, 42, .68)); z-index: 2; transition: var(--transition); }
+        .hero-content { position: relative; z-index: 3; padding: 0 1rem; max-width: 850px; animation: heroContentIn .9s cubic-bezier(.22,1,.36,1) both; }
+        .hero-content h1 { font-size: 3.5rem; font-weight: 600; margin-bottom: 1rem; letter-spacing: -.02em; text-shadow: 0 4px 15px rgba(0,0,0,0.5); }
+        .hero-content p { font-size: 1.2rem; margin: 0 auto; max-width: 760px; font-weight: 300; text-shadow: 0 2px 10px rgba(0,0,0,0.5); }
+        .map-warning-text { color: #F87171; font-size: 0.95rem; font-weight: 400; margin-top: 15px; text-shadow: 0 1px 2px rgba(0,0,0,0.8); display: block; }
+
+        @media (max-width: 768px) { .hero-content h1 { font-size: 2.5rem; } .hero-content p { font-size: 1rem; } }
+
+        .btn { display: inline-block; position: relative; overflow: hidden; padding: 15px 30px; background: var(--primary-blue); color: #fff; text-decoration: none; border-radius: 30px; margin-top: 20px; box-shadow: 0 10px 30px rgba(30, 64, 175, .22); transition: transform .35s cubic-bezier(.22,1,.36,1), box-shadow .35s ease, background-color .35s ease; }
+        .btn::before { content: ""; position: absolute; top: 0; left: -120%; width: 80%; height: 100%; background: linear-gradient(90deg, transparent, rgba(255,255,255,.28), transparent); transform: skewX(-18deg); transition: left .65s ease; }
+        .btn:hover { transform: translateY(-4px) scale(1.025); background: #46ebdd; box-shadow: 0 16px 34px rgba(30, 64, 175, .28); }
+        .btn:hover::before { left: 140%; }
+
+        /* ==================== MAIN LAYOUT ==================== */
+        .main-layout { max-width: 1200px; margin: 2rem auto; padding: 1rem 1.5rem; display: flex; flex-direction: column; gap: 2.75rem; }
+        .section-title { font-size: 1.6rem; color: var(--primary-blue); margin-bottom: .25rem; display: flex; align-items: center; gap: 10px; font-weight: 600; position: relative; padding-left: .1rem; }
+        .section-title i { transition: transform .35s cubic-bezier(.22,1,.36,1); }
+        .section-title:hover i { transform: translateY(-2px) rotate(-4deg); }
+        .section-desc { color: var(--text-light); font-size: .95rem; margin-bottom: 1.25rem; max-width: 640px; line-height: 1.6; }
+
+        /* ==================== 🖼️ บรรยากาศเมืองสงขลา (Grid) ==================== */
+        .atmosphere-section { background-color: var(--white); border-radius: 20px; padding: 2.1rem; border: 1px solid var(--card-border); box-shadow: 0 10px 30px rgba(15, 23, 42, .055), 0 2px 6px rgba(15, 23, 42, .025); transition: box-shadow .4s ease; }
+        .atmosphere-section:hover { box-shadow: 0 18px 45px rgba(15, 23, 42, .08), 0 4px 10px rgba(15, 23, 42, .03); }
+        .atmosphere-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem; }
+        .atmosphere-title { font-size: 1.3rem; font-weight: 600; display: flex; align-items: center; gap: 10px; color: var(--text-dark); }
+
+        .atmosphere-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 1.25rem; }
+        @media (max-width: 992px) { .atmosphere-grid { grid-template-columns: repeat(3, 1fr); } }
+        @media (max-width: 768px) { .atmosphere-grid { grid-template-columns: repeat(2, 1fr); gap: 1rem; } }
+        @media (max-width: 480px) { .atmosphere-grid { grid-template-columns: 1fr; } }
+
+        .atmosphere-item { position: relative; border-radius: 16px; overflow: hidden; height: 220px; cursor: pointer; box-shadow: 0 8px 20px rgba(15, 23, 42, .07); opacity: 0; transform: translateY(24px); transition: transform .5s cubic-bezier(.22,1,.36,1), box-shadow .4s ease; }
+        .atmosphere-item.in-view { opacity: 1; transform: translateY(0); }
+        .atmosphere-item:hover { transform: translateY(-8px); box-shadow: 0 22px 42px rgba(15, 23, 42, .13); }
+        .atmosphere-img { width: 100%; height: 100%; object-fit: cover; transition: transform .5s cubic-bezier(.22,1,.36,1); will-change: transform; }
+        .atmosphere-item:hover .atmosphere-img { transform: scale(1.08); }
+        .atmosphere-overlay { position: absolute; bottom: 0; left: 0; width: 100%; padding: 1.75rem 1rem 1rem 1rem; background: linear-gradient(to top, rgba(0,0,0,0.85), rgba(0,0,0,0)); color: #fff; transition: padding .35s ease; }
+        .atmosphere-item:hover .atmosphere-overlay { padding-bottom: 1.25rem; }
+        .atmosphere-name { font-size: 1rem; font-weight: 500; }
+
+        @media (max-width: 768px) { .atmosphere-section { padding: 1.35rem; } .atmosphere-item { height: 190px; } }
+
+        .lightbox { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background-color: rgba(15, 23, 42, 0.85); backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px); z-index: 2000; display: none; align-items: center; justify-content: center; opacity: 0; transition: opacity 0.3s ease; }
+        .lightbox.active { display: flex; opacity: 1; }
+        .lightbox-content { max-width: 85%; max-height: 80vh; border-radius: 12px; box-shadow: 0 25px 80px rgba(0,0,0,.35); transform: scale(0.9); transition: transform 0.3s ease; }
+        .lightbox.active .lightbox-content { transform: scale(1); }
+        .lightbox-close { position: absolute; top: 25px; right: 35px; color: #FFFFFF; font-size: 2.5rem; cursor: pointer; transition: transform .25s ease, opacity .25s ease; }
+        .lightbox-close:hover { transform: rotate(90deg) scale(1.08); opacity: .8; }
+
+        /* ==================== 💬 FLOATING AI CHAT WIDGET ==================== */
+        .floating-chat-widget { position: fixed; bottom: 2rem; right: 2rem; z-index: 2000; display: block; filter: drop-shadow(0 12px 28px rgba(15, 23, 42, .10)); }
+
+        .chat-trigger-btn { width: 65px; height: 65px; border-radius: 50%; background-color: var(--primary-blue); color: white; border: none; cursor: pointer; box-shadow: 0 12px 30px rgba(30, 64, 175, .22), 0 3px 8px rgba(15, 23, 42, .08); display: flex; align-items: center; justify-content: center; font-size: 1.8rem; transition: transform .4s cubic-bezier(.22,1,.36,1), background-color 0.2s, box-shadow .3s ease; position: relative; z-index: 2002; }
+        .chat-trigger-btn:hover { transform: scale(1.08) translateY(-2px); background-color: var(--secondary-blue); box-shadow: 0 18px 38px rgba(30, 64, 175, .27), 0 5px 10px rgba(15, 23, 42, .09); }
+        .chat-trigger-btn i { transition: transform 0.3s ease; }
+
+        .chat-window { position: absolute; bottom: 0; right: 0; width: 370px; height: 500px; background-color: var(--white); border-radius: 20px; border: 1px solid var(--card-border); box-shadow: 0 28px 70px rgba(15, 23, 42, .18), 0 6px 18px rgba(15, 23, 42, .08); display: flex; flex-direction: column; overflow: hidden; transform: scale(0.1) translateY(40px); transform-origin: bottom right; opacity: 0; pointer-events: none; transition: transform 0.4s cubic-bezier(0.34, 1.56, 0.64, 1), opacity 0.2s; z-index: 2001; }
+
+        .floating-chat-widget.open .chat-window { transform: scale(1) translateY(0); opacity: 1; pointer-events: auto; }
+        .floating-chat-widget.open .chat-trigger-btn { background-color: #EF4444; box-shadow: none; position: absolute; bottom: unset; top: 7px; right: 12px; width: 40px; height: 40px; font-size: 1.2rem; }
+
+        @media (max-width: 480px) {
+            .floating-chat-widget { bottom: 1rem; right: 1rem; left: 1rem; filter: none; }
+            .chat-window { width: 100%; height: calc(100vh - 120px); }
+            .floating-chat-widget.open .chat-trigger-btn { top: 12px; right: 16px; }
+            .chat-trigger-btn { box-shadow: 0 10px 24px rgba(30, 64, 175, .22); }
+        }
+
+        .chat-header { padding: 1.1rem 1.5rem; border-bottom: 1px solid var(--card-border); display: flex; align-items: center; justify-content: space-between; background-color: var(--white); }
+        .chat-header-left { display: flex; align-items: center; gap: 0.75rem; }
+        .chat-status { width: 9px; height: 9px; background-color: #10B981; border-radius: 50%; box-shadow: 0 0 0 3px rgba(16, 185, 129, 0.2); }
+        .chat-title { font-weight: 600; font-size: 1rem; margin-right: 45px; }
+
+        .chat-messages { flex-grow: 1; padding: 1.5rem; overflow-y: auto; display: flex; flex-direction: column; gap: 1rem; background-color: var(--bg-color); }
+        .message { max-width: 85%; padding: 0.75rem 1rem; border-radius: 16px; font-size: 0.9rem; line-height: 1.5; word-wrap: break-word; animation: messageIn .3s cubic-bezier(.22,1,.36,1) both; }
+        .user-message { background-color: var(--primary-blue); color: white; align-self: flex-end; border-bottom-right-radius: 4px; box-shadow: 0 2px 5px rgba(30, 64, 175, 0.1); }
+        .ai-message a { display: inline-flex; align-items: center; gap: 6px; margin-top: 8px; padding: 6px 14px; background-color: var(--white); color: var(--primary-blue); border: 1px solid #CBD5E1; border-radius: 8px; text-decoration: none; font-size: 0.85rem; font-weight: 500; transition: var(--transition); }
+        .ai-message a:hover { background-color: #F1F5F9; border-color: var(--primary-blue); color: var(--primary-blue); transform: translateY(-1px); }
+        .chat-input-area { padding: 1rem; border-top: 1px solid var(--card-border); display: flex; gap: 0.5rem; background-color: var(--white); }
+        .chat-input { flex-grow: 1; border: 1px solid var(--card-border); padding: 0.75rem 1rem; border-radius: 12px; font-size: 0.9rem; outline: none; background-color: var(--bg-color); color: var(--text-dark); transition: var(--transition); }
+        .chat-input:focus { border-color: var(--primary-blue); background-color: var(--white); }
+        .send-btn { background-color: var(--primary-blue); color: white; border: none; width: 45px; height: 45px; border-radius: 12px; cursor: pointer; display: flex; align-items: center; justify-content: center; font-size: 1rem; box-shadow: 0 7px 16px rgba(30, 64, 175, .13); transition: var(--transition); }
+        .send-btn:hover { opacity: 0.9; transform: translateY(-2px); box-shadow: 0 10px 20px rgba(30, 64, 175, .18); }
+
+        footer { text-align: center; padding: 2.5rem 2rem; color: var(--text-light); border-top: 1px solid var(--card-border); margin-top: 40px; font-size: 0.9rem; }
+
+        :focus-visible { outline: 3px solid var(--secondary-blue); outline-offset: 3px; }
+
+        @keyframes heroContentIn { from { opacity: 0; transform: translateY(24px); } to { opacity: 1; transform: translateY(0); } }
+        @keyframes heroKenBurns { from { transform: scale(1.015); } to { transform: scale(1.055); } }
+        @keyframes messageIn { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: translateY(0); } }
+
+        @media (prefers-reduced-motion: reduce) {
+            *, *::before, *::after { scroll-behavior: auto !important; animation-duration: .01ms !important; animation-iteration-count: 1 !important; transition-duration: .01ms !important; }
+        }
+    </style>
+</head>
+
+<body data-theme="light">
+
+    <header>
+        <div class="nav-container">
+            <a href="index.html" class="logo">
+                <i class="fa-solid fa-water"></i> Songkhla Vibe
+            </a>
+
+            <ul class="nav-menu" id="navMenu">
+                <li><a href="index.html" class="nav-link active" id="menuHome">หน้าแรก</a></li>
+                <li><a href="smart-travel.html" class="nav-link" id="menuSmartTravel">พิกัดเที่ยวอัจฉริยะ</a></li>
+                <li><a href="attractions.html" class="nav-link" id="menuAttractions">สถานที่ท่องเที่ยว</a></li>
+                <li><a href="about.html" class="nav-link active" id="menuAbout">ประวัติเมือง</a></li>
+                <li><a href="contact.html" class="nav-link" id="menuContact">ติดต่อเรา</a></li>
+            </ul>
+
+            <div class="nav-controls">
+                <button class="theme-toggle" id="themeToggleBtn" onclick="toggleTheme()" title="เปลี่ยนโหมดหน้าจอ">
+                    <i class="fa-solid fa-moon" id="themeIcon"></i>
+                </button>
+                <button class="lang-toggle" id="langToggle" onclick="changeLanguage()">
+                    <i class="fa-solid fa-earth-americas"></i> <span>EN</span>
+                </button>
+                <button class="mobile-menu-btn" onclick="toggleMobileMenu()">
+                    <i class="fa-solid fa-bars" id="menuIcon"></i>
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <section class="hero-section">
+        <div class="hero-bg-slider" id="heroBgSlider" style="background-image: url('images/191191.jpg');"></div>
+        <div class="hero-overlay"></div>
+        <div class="hero-content">
+            <h1 id="heroTitle">สัมผัสเสน่ห์... สงขลา</h1>
+            <p id="heroDesc">เมืองสองทะเลที่ผสมผสานความคลาสสิกของย่านเมืองเก่า และความงดงามของธรรมชาติได้อย่างลงตัว</p>
+            <span class="map-warning-text"><i class="fa-solid fa-triangle-exclamation"></i> หมุดอาจไม่ได้ตรง 100% โปรดเช็คใน Google map ก่อนทุกครั้งก่อนเริ่มเส้นทาง</span>
+            <a href="smart-travel.html" class="btn">เริ่มออกเดินทาง</a>
+        </div>
+    </section>
+
+    <main id="mainLayout" class="main-layout">
+
+        <div class="atmosphere-section">
+            <div class="atmosphere-header">
+                <div class="atmosphere-title" id="galleryTitle"><i class="fa-solid fa-images"></i> บรรยากาศเมืองสงขลา</div>
+            </div>
+            <div class="atmosphere-grid" id="atmosphereGrid">
+                <div class="atmosphere-item" onclick="openLightbox('images/c254545.jpg')">
+                    <img src="images/c254545.jpg" class="atmosphere-img" alt="หาดสมิหลา" loading="lazy">
+                    <div class="atmosphere-overlay"><div class="atmosphere-name">หาดสมิหลา ยามเย็น</div></div>
+                </div>
+                <div class="atmosphere-item" onclick="openLightbox('images/708411.jpg')">
+                    <img src="images/708411.jpg" class="atmosphere-img" alt="เมืองเก่าสงขลา" loading="lazy">
+                    <div class="atmosphere-overlay"><div class="atmosphere-name">หอนาฬิกา</div></div>
+                </div>
+                <div class="atmosphere-item" onclick="openLightbox('images/54545494.jpg')">
+                    <img src="images/54545494.jpg" class="atmosphere-img" alt="วิวบนเขาตังกวน" loading="lazy">
+                    <div class="atmosphere-overlay"><div class="atmosphere-name">วิวเมืองสองทะเล บนเขาตังกวน</div></div>
+                </div>
+                <div class="atmosphere-item" onclick="openLightbox('images/19299_0.jpg')">
+                    <img src="images/19299_0.jpg" class="atmosphere-img" alt="สตรีทอาร์ต" loading="lazy">
+                    <div class="atmosphere-overlay"><div class="atmosphere-name">สตรีทอาร์ต ถนนนางงาม</div></div>
+                </div>
+                <div class="atmosphere-item" onclick="openLightbox('images/191191.jpg')">
+                    <img src="images/191191.jpg" class="atmosphere-img" alt="เกาะยอ" loading="lazy">
+                    <div class="atmosphere-overlay"><div class="atmosphere-name">วิถีชีวิตเกาะยอ</div></div>
+                </div>
+                <div class="atmosphere-item" onclick="openLightbox('images/676767.jpg')">
+                    <img src="images/676767.jpg" class="atmosphere-img" alt="เจดีย์เขาตังกวน" loading="lazy">
+                    <div class="atmosphere-overlay"><div class="atmosphere-name">พระเจดีย์หลวงเขาตังกวน</div></div>
+                </div>
+                <div class="atmosphere-item" onclick="openLightbox('images/4794616-170667a.jpg')">
+                    <img src="images/4794616-170667a.jpg" class="atmosphere-img" alt="หาดชลาทัศน์" loading="lazy">
+                    <div class="atmosphere-overlay"><div class="atmosphere-name">รูปปั้นนางเงือกทองคำ</div></div>
+                </div>
+                <div class="atmosphere-item" onclick="openLightbox('images/0W7A0318.jpg')">
+                    <img src="images/0W7A0318.jpg" class="atmosphere-img" alt="SVC mini marathon" loading="lazy">
+                    <div class="atmosphere-overlay"><div class="atmosphere-name">SVC mini marathon</div></div>
+                </div>
+            </div>
+        </div>
+
+    </main>
+
+    <div class="floating-chat-widget" id="chatWidget">
+        <div class="chat-window">
+            <div class="chat-header">
+                <div class="chat-header-left">
+                    <div class="chat-status"></div>
+                    <div class="chat-title">Thitipong AI Guide</div>
+                </div>
+            </div>
+            <div class="chat-messages" id="chatMessages">
+                <div class="message ai-message">
+                    สวัสดีครับ! ผมคือ <b>Thitipong AI Guide</b> ไกด์ท้องถิ่นของสงขลา 🌊 สามารถสืบค้นข้อมูลที่กินที่เที่ยวอัปเดตใหม่ได้ทันที อยากให้ผมช่วยจัดทริปหรือแนะนำมุมถ่ายรูปสวยๆ พิมพ์มาคุยกันได้เลยครับน่ะ!
+                </div>
+            </div>
+            <div class="chat-input-area">
+                <input type="text" class="chat-input" id="userInput" placeholder="พิมพ์ข้อความคำถามที่นี่...">
+                <button class="send-btn" id="sendBtn"><i class="fa-solid fa-paper-plane"></i></button>
+            </div>
+        </div>
+        <button class="chat-trigger-btn" onclick="toggleChat()" title="คุยกับ AI ไกด์สงขลา">
+            <i class="fa-solid fa-comments" id="chatIcon"></i>
+        </button>
+    </div>
+
+    <div class="lightbox" id="lightboxOverlay" onclick="closeLightbox()">
+        <span class="lightbox-close">×</span>
+        <img class="lightbox-content" id="lightboxImg" src="">
+    </div>
+
+    <footer>
+        <p>© 2026 Songkhla Vibe - วิทยาลัยอาชีวศึกษาสงขลา. All Rights Reserved.</p>
+    </footer>
+
+    <script src="config.js"></script>
+    <script>
+        // ==================== ระบบสลับรูปหน้าปก (Hero) ====================
+        const backgroundImages = [
+            "images/41435_n.jpg",
+            "images/8674220342781_n.jpg",
+            "images/64.jpg",
+            "images/19303_0.jpg"
+        ];
+        let currentBgIndex = 0;
+        function changeHeroBackground() {
+            const heroBg = document.getElementById('heroBgSlider');
+            if (!heroBg) return;
+            heroBg.style.backgroundImage = `url('${backgroundImages[currentBgIndex]}')`;
+            currentBgIndex = (currentBgIndex + 1) % backgroundImages.length;
+        }
+
+        // ==================== ฟังก์ชันควบคุมกล่องแชททับซ้อน ====================
+        function toggleChat() {
+            const widget = document.getElementById('chatWidget');
+            const icon = document.getElementById('chatIcon');
+            if (!widget) return;
+            widget.classList.toggle('open');
+            if (widget.classList.contains('open')) {
+                if (icon) icon.className = 'fa-solid fa-xmark';
+                setTimeout(() => { document.getElementById('userInput')?.focus(); }, 400);
+            } else {
+                if (icon) icon.className = 'fa-solid fa-comments';
+            }
+        }
+
+        // ==================== การส่งข้อความแชท AI หลังบ้าน ====================
+        const chatMessages = document.getElementById('chatMessages');
+        const userInput = document.getElementById('userInput');
+        const sendBtn = document.getElementById('sendBtn');
+
+        async function handleSendMessage() {
+            if (!userInput || !chatMessages) return;
+            const text = userInput.value.trim();
+            if (!text) return;
+
+            const userDiv = document.createElement('div');
+            userDiv.className = 'message user-message';
+            userDiv.innerText = text;
+            chatMessages.appendChild(userDiv);
+            userInput.value = '';
+            chatMessages.scrollTop = chatMessages.scrollHeight;
+
+            const typingId = 'typing-' + Date.now();
+            const typingDiv = document.createElement('div');
+            typingDiv.className = 'message ai-message';
+            typingDiv.id = typingId;
+            typingDiv.innerHTML = '<i class="fa-solid fa-circle-notch fa-spin"></i> กำลังคิดหาข้อมูล...';
+            chatMessages.appendChild(typingDiv);
+            chatMessages.scrollTop = chatMessages.scrollHeight;
+
+            try {
+                const response = await fetch(API_BASE_URL + '/api/chat', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ message: text })
+                });
+                const data = await response.json();
+                document.getElementById(typingId)?.remove();
+
+                const aiDiv = document.createElement('div');
+                aiDiv.className = 'message ai-message';
+                aiDiv.innerHTML = data.reply;
+                chatMessages.appendChild(aiDiv);
+            } catch (error) {
+                document.getElementById(typingId)?.remove();
+                const errDiv = document.createElement('div');
+                errDiv.className = 'message ai-message';
+                errDiv.innerHTML = '⚠️ ไม่สามารถเชื่อมต่อกับ AI ได้ กรุณาตรวจสอบว่าเซิร์ฟเวอร์เปิดใช้งานอยู่';
+                chatMessages.appendChild(errDiv);
+            }
+            chatMessages.scrollTop = chatMessages.scrollHeight;
+        }
+
+        sendBtn?.addEventListener('click', handleSendMessage);
+        userInput?.addEventListener('keypress', (e) => { if (e.key === 'Enter') handleSendMessage(); });
+
+        // ==================== ฟังก์ชันโหมด/ภาษา/เมนู ====================
+        function initTheme() {
+            const savedTheme = localStorage.getItem('theme') || 'light';
+            document.documentElement.setAttribute('data-theme', savedTheme);
+            const themeIcon = document.getElementById('themeIcon');
+            if (themeIcon) {
+                themeIcon.className = savedTheme === 'dark' ? 'fa-solid fa-sun' : 'fa-solid fa-moon';
+            }
+        }
+
+        function toggleTheme() {
+            const currentTheme = document.documentElement.getAttribute('data-theme') || 'light';
+            const newTheme = currentTheme === 'light' ? 'dark' : 'light';
+            document.documentElement.setAttribute('data-theme', newTheme);
+            localStorage.setItem('theme', newTheme);
+            const themeIcon = document.getElementById('themeIcon');
+            if (themeIcon) {
+                themeIcon.className = newTheme === 'dark' ? 'fa-solid fa-sun' : 'fa-solid fa-moon';
+            }
+        }
+
+        function toggleMobileMenu() {
+            const menu = document.getElementById('navMenu');
+            const menuIcon = document.getElementById('menuIcon');
+            if (menu) {
+                menu.classList.toggle('active');
+                if (menuIcon) {
+                    menuIcon.className = menu.classList.contains('active')
+                        ? 'fa-solid fa-xmark'
+                        : 'fa-solid fa-bars';
+                }
+            }
+        }
+
+        document.addEventListener('DOMContentLoaded', () => {
+            initTheme();
+        });
+
+        let currentLang = 'th';
+        function changeLanguage() {
+            currentLang = currentLang === 'th' ? 'en' : 'th';
+            const langSpan = document.getElementById('langToggle')?.querySelector('span');
+            if (langSpan) langSpan.innerText = currentLang === 'th' ? 'EN' : 'TH';
+
+            const heroTitle = document.getElementById('heroTitle');
+            const heroDesc = document.getElementById('heroDesc');
+            if (currentLang === 'en') {
+                if (heroTitle) heroTitle.innerText = "Experience Songkhla Vibe";
+                if (heroDesc) heroDesc.innerText = "Discover nature, street art culture, and local delicacies with us.";
+            } else {
+                if (heroTitle) heroTitle.innerText = "สัมผัสเสน่ห์... สงขลา";
+                if (heroDesc) heroDesc.innerText = "เมืองสองทะเลที่ผสมผสานความคลาสสิกของย่านเมืองเก่า และความงดงามของธรรมชาติได้อย่างลงตัว";
+            }
+        }
+
+        // ==================== Lightbox สำหรับแกลเลอรี่ ====================
+        function openLightbox(src) {
+            const lb = document.getElementById('lightboxOverlay');
+            if (!lb) return;
+            document.getElementById('lightboxImg').src = src;
+            lb.classList.add('active');
+        }
+        function closeLightbox() {
+            document.getElementById('lightboxOverlay')?.classList.remove('active');
+        }
+
+        document.addEventListener('keydown', (event) => {
+            if (event.key === 'Escape') {
+                closeLightbox();
+                document.getElementById('chatWidget')?.classList.remove('open');
+                const menu = document.getElementById('navMenu');
+                if (menu) menu.classList.remove('active');
+            }
+        });
+
+        // ==================== Scroll Reveal สำหรับ Grid บรรยากาศ ====================
+        function initScrollReveal() {
+            const items = document.querySelectorAll('.atmosphere-item');
+            if (!items.length) return;
+            if (!('IntersectionObserver' in window)) {
+                items.forEach(el => el.classList.add('in-view'));
+                return;
+            }
+            const observer = new IntersectionObserver((entries) => {
+                entries.forEach((entry, idx) => {
+                    if (entry.isIntersecting) {
+                        setTimeout(() => entry.target.classList.add('in-view'), idx * 60);
+                        observer.unobserve(entry.target);
+                    }
+                });
+            }, { threshold: 0.15 });
+            items.forEach(el => observer.observe(el));
+        }
+
+        window.onload = () => {
+            changeHeroBackground();
+            setInterval(changeHeroBackground, 2500);
+            initScrollReveal();
+        };
+    </script>
+</body>
+</html>

@@ -1,0 +1,441 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ติดต่อเรา - Songkhla Vibe</title>
+    
+    <link href="https://fonts.googleapis.com/css2?family=Prompt:wght@300;400;500;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="icon" href="images/songkhla1.png">
+    
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin="" />
+
+    <style>
+        /* ==================== 🛠️ CSS Variables (Light/Dark Mode) ==================== */
+        :root {
+            --bg-color: #F8FAFC;
+            --primary-blue: #1E40AF;
+            --secondary-blue: #60A5FA;
+            --text-dark: #1E293B;
+            --text-light: #64748B;
+            --white: #FFFFFF;
+            --card-border: #E2E8F0;
+            --nav-bg: rgba(255, 255, 255, 0.9);
+            --transition: all 0.3s ease-in-out;
+            --shadow: 0 10px 30px rgba(0,0,0,0.05);
+        }
+
+        [data-theme="dark"] {
+            --bg-color: #0F172A;
+            --primary-blue: #3B82F6;
+            --secondary-blue: #93C5FD;
+            --text-dark: #F8FAFC;
+            --text-light: #94A3B8;
+            --white: #1E293B;
+            --card-border: #334155;
+            --nav-bg: rgba(15, 23, 42, 0.95);
+            --shadow: 0 10px 30px rgba(0,0,0,0.3);
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Prompt', sans-serif; }
+        body { background-color: var(--bg-color); color: var(--text-dark); line-height: 1.6; padding-top: 80px; transition: var(--transition); }
+
+        /* ==================== 🌐 Navigation Bar (Responsive) ==================== */
+        header { 
+            position: fixed; top: 0; left: 0; width: 100%; 
+            background-color: var(--nav-bg); backdrop-filter: blur(10px); 
+            border-bottom: 1px solid var(--card-border); z-index: 1000; transition: var(--transition); 
+        }
+        .nav-container { max-width: 1200px; margin: 0 auto; padding: 1rem 2rem; display: flex; justify-content: space-between; align-items: center; }
+        .logo { font-size: 1.5rem; font-weight: 600; color: var(--primary-blue); text-decoration: none; display: flex; align-items: center; gap: 0.5rem; }
+        
+        .nav-menu { display: flex; align-items: center; gap: 2rem; list-style: none; }
+        .nav-link { color: var(--text-dark); text-decoration: none; font-size: 1rem; transition: var(--transition); font-weight: 400; }
+        .nav-link:hover, .nav-link.active { color: var(--primary-blue); font-weight: 600; }
+        
+        .nav-controls { display: flex; align-items: center; gap: 1rem; }
+        .theme-toggle, .lang-toggle { 
+            background: none; border: 1px solid var(--card-border); color: var(--text-dark); 
+            padding: 0.5rem 0.8rem; border-radius: 8px; cursor: pointer; background-color: var(--white); 
+            transition: var(--transition);
+        }
+        .theme-toggle:hover { background-color: var(--bg-color); }
+        .mobile-menu-btn { display: none; background: none; border: none; color: var(--text-dark); font-size: 1.4rem; cursor: pointer; }
+
+        @media (max-width: 768px) {
+            .mobile-menu-btn { display: block; }
+            .nav-menu { 
+                position: fixed; top: 70px; left: -100%; width: 100%; height: calc(100vh - 70px); 
+                background-color: var(--bg-color); flex-direction: column; padding-top: 3rem; gap: 2.5rem; transition: 0.3s; 
+            }
+            .nav-menu.active { left: 0; }
+        }
+
+        /* ==================== 📍 Contact Section ==================== */
+        .contact-container {
+            max-width: 1200px; margin: 50px auto; padding: 40px 20px;
+            background: var(--white); border-radius: 24px; box-shadow: var(--shadow);
+            display: grid; grid-template-columns: 1.2fr 1fr; gap: 40px;
+            border: 1px solid var(--card-border); transition: var(--transition);
+        }
+        @media (max-width: 992px) { .contact-container { grid-template-columns: 1fr; gap: 30px; margin: 20px 15px; } }
+
+        /* แผนที่ */
+        .contact-map-side { display: flex; flex-direction: column; height: 100%; }
+        #contact-map { height: 480px; width: 100%; border-radius: 16px; border: 1px solid var(--card-border); z-index: 1; }
+        [data-theme="dark"] .leaflet-tile { filter: brightness(0.6) invert(1) contrast(3) hue-rotate(200deg); }
+        [data-theme="dark"] .leaflet-popup-content-wrapper, [data-theme="dark"] .leaflet-popup-tip { background: #1E293B; color: #F8FAFC; }
+
+        /* ข้อมูลการติดต่อ */
+        .contact-info-side { display: flex; flex-direction: column; justify-content: center; gap: 25px; padding-right: 20px; }
+        .info-item { display: flex; gap: 15px; align-items: flex-start; }
+        .info-item i { font-size: 1.3rem; color: var(--primary-blue); margin-top: 5px; width: 25px; text-align: center; }
+        .info-text p { color: var(--text-dark); font-size: 1rem; }
+
+        .divider { height: 1px; background-color: var(--card-border); margin: 5px 0; }
+        .business-hours h5, .rules h5 { font-size: 1.05rem; color: var(--text-dark); margin-bottom: 8px; font-weight: 600; }
+        .business-hours p, .rules ul { color: var(--text-light); font-size: 0.95rem; }
+        .rules ul { list-style: none; display: flex; flex-direction: column; gap: 4px; padding-left: 0; }
+
+        /* ==================== 👥 Team Section ==================== */
+        .team-container {
+            max-width: 1200px; margin: 0 auto 50px auto; padding: 50px 20px;
+            background: var(--white); border-radius: 24px; box-shadow: var(--shadow);
+            border: 1px solid var(--card-border); transition: var(--transition); text-align: center;
+        }
+        .team-title { font-size: 1.4rem; color: var(--text-dark); margin-bottom: 40px; font-weight: 600; display: flex; justify-content: center; align-items: center; gap: 12px; }
+        .team-title i { color: #8B5CF6; font-size: 1.5rem; }
+        
+        .team-list { display: flex; flex-direction: column; gap: 20px; max-width: 600px; margin: 0 auto; }
+        .team-item { display: flex; align-items: center; padding: 10px 20px; transition: var(--transition); border-radius: 12px; }
+        .team-item:hover { background-color: var(--bg-color); transform: translateX(5px); }
+        .team-number { 
+            background-color: #093688; color: #FFFFFF; width: 32px; height: 32px; 
+            border-radius: 50%; display: flex; align-items: center; justify-content: center; 
+            font-size: 0.95rem; font-weight: 600; flex-shrink: 0; box-shadow: 0 4px 10px rgba(74, 222, 241, 0.2); 
+        }
+        .team-name { color: var(--text-dark); font-weight: 500; flex-grow: 1; text-align: left; margin-left: 25px; font-size: 1.05rem; }
+        .team-id { color: var(--text-light); font-size: 0.85rem; padding: 6px 14px; border: 1px solid var(--card-border); border-radius: 8px; font-family: monospace; }
+        
+        @media (max-width: 768px) {
+            .team-container { margin: 0 15px 40px 15px; padding: 30px 15px; }
+            .team-item { flex-wrap: wrap; justify-content: center; text-align: center; gap: 10px; }
+            .team-name { margin-left: 0; width: 100%; text-align: center; }
+        }
+        .team-footer-text { margin-top: 40px; color: var(--text-light); font-size: 0.9rem; opacity: 0.7; }
+
+        /* ==================== 💬 Floating AI Chat Widget ==================== */
+        .floating-chat-widget { position: fixed; bottom: 2rem; right: 2rem; z-index: 2000; display: flex; flex-direction: column; align-items: flex-end; gap: 1rem; }
+        .chat-trigger-btn { 
+            width: 60px; height: 60px; border-radius: 50%; background-color: var(--primary-blue); 
+            color: white; border: none; cursor: pointer; box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2); 
+            display: flex; align-items: center; justify-content: center; font-size: 1.5rem; 
+            transition: transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275), background-color 0.2s; 
+        }
+        .chat-trigger-btn:hover { transform: scale(1.08); background-color: var(--secondary-blue); }
+        
+        .chat-window { 
+            width: 370px; height: 500px; background-color: var(--white); border-radius: 20px; 
+            border: 1px solid var(--card-border); box-shadow: var(--shadow); display: flex; flex-direction: column; 
+            overflow: hidden; transform: scale(0.8) translateY(30px); opacity: 0; pointer-events: none; 
+            transform-origin: bottom right; transition: transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1), opacity 0.2s; 
+        }
+        .floating-chat-widget.open .chat-window { transform: scale(1) translateY(0); opacity: 1; pointer-events: auto; }
+        .floating-chat-widget.open .chat-trigger-btn { background-color: #EF4444; } /* เปลี่ยนเป็นสีแดงตอนเปิด */
+        
+        .chat-header { background-color: var(--primary-blue); color: #FFFFFF; padding: 15px 20px; display: flex; justify-content: space-between; align-items: center; }
+        .chat-header h4 { font-weight: 500; font-size: 1rem; display: flex; align-items: center; gap: 8px; }
+        .chat-header button { background: none; border: none; color: #FFFFFF; font-size: 1.2rem; cursor: pointer; }
+
+        .chat-messages { flex-grow: 1; padding: 1.5rem; overflow-y: auto; display: flex; flex-direction: column; gap: 1rem; background-color: var(--bg-color); }
+        .message { max-width: 85%; padding: 0.75rem 1rem; border-radius: 16px; font-size: 0.95rem; line-height: 1.5; word-wrap: break-word; }
+        .user-message { background-color: var(--primary-blue); color: white; align-self: flex-end; border-bottom-right-radius: 4px; }
+        .ai-message a {display: inline-flex;align-items: center;gap: 6px;margin-top: 8px;padding: 6px 14px;background-color: var(--white);color: var(--primary-blue);border: 1px solid #CBD5E1; /* เส้นขอบสีเทาอ่อน สไตล์มินิมอล */border-radius: 8px;        /* ความโค้งมนมนพอดี */text-decoration: none;     /* เอาเส้นใต้ข้อความออก */font-size: 0.85rem;font-weight: 500;transition: var(--transition);}
+        /* เอฟเฟกต์ตอนเอาเมาส์ไปชี้ (Hover) */
+        .ai-message a:hover {background-color: #F1F5F9;border-color: var(--primary-blue); /* เปลี่ยนสีขอบเป็นสีน้ำเงินหลักตอนชี้ */color: var(--primary-blue);transform: translateY(-2px);      /* ขยับขึ้นเล็กน้อยเพิ่มมิติ */}
+        .chat-input-area { padding: 1rem; border-top: 1px solid var(--card-border); display: flex; gap: 0.5rem; background-color: var(--white); }
+        .chat-input { flex-grow: 1; border: 1px solid var(--card-border); padding: 0.75rem 1rem; border-radius: 20px; font-size: 0.9rem; outline: none; background-color: var(--bg-color); color: var(--text-dark); }
+        .send-btn { background-color: var(--primary-blue); color: white; border: none; width: 45px; height: 45px; border-radius: 50%; cursor: pointer; display: flex; align-items: center; justify-content: center; transition: var(--transition); }
+        .send-btn:hover { background-color: var(--secondary-blue); }
+
+        @media (max-width: 768px) {
+            .chat-window { width: 320px; right: 1rem; bottom: 5rem; height: 450px; }
+            .chat-trigger-btn { width: 55px; height: 55px; right: 1rem; bottom: 1rem; }
+            .floating-chat-widget { bottom: 1rem; right: 1rem; }
+        }
+
+        /* --- ส่วนตกแต่ง Page Header (บริเวณวงเขียว) --- */
+        .page-header {
+            position: relative;
+            width: 100%;
+            height: 350px; /* ปรับความสูงตามต้องการ */
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            color: white;
+    
+            /* ใส่รูปภาพพื้นหลังที่นี่ */
+            background-image: linear-gradient(rgba(0, 0, 0, 0.4), rgba(0, 0, 0, 0.4)), 
+                      url('https://scontent.fhdy4-1.fna.fbcdn.net/v/t39.30808-6/532333914_1210188724458147_1137560163280128060_n.jpg?_nc_cat=111&ccb=1-7&_nc_sid=86c6b0&_nc_ohc=6He55w04RcsQ7kNvwFlfbDu&_nc_oc=AdrKz0DlhGK2jB1MdWAZSPeJpThKQqUn1YI0XSLWwHQhoVmsFBVwInH4W8MTqU3s0zifJoDZi6A_vy6hG3EgSlZp&_nc_zt=23&_nc_ht=scontent.fhdy4-1.fna&_nc_gid=WBChdYwwB2SPOGue8YMl_w&_nc_ss=7b2a8&oh=00_Af6VXmFOG2menhY1MUD3RSTHluufDJfxS4Q8hPBZy0xvOQ&oe=6A18EB92'); 
+    
+            background-size: cover;
+            background-position: center;
+            margin-bottom: 40px;
+            border-radius: 0 0 50px 50px; /* เพิ่มความโค้งมนด้านล่างให้ดูทันสมัย */
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+        }
+
+        .page-header h1 {
+            font-size: 3rem;
+            font-weight: 700;
+            margin-bottom: 10px;
+            text-shadow: 2px 2px 10px rgba(0,0,0,0.5); /* เงาตัวอักษรให้อ่านง่าย */
+        }
+
+        .page-header p {
+            font-size: 1.2rem;
+            opacity: 0.9;
+            max-width: 600px;
+        }
+
+        /* ปรับแต่งสำหรับมือถือ */
+        @media (max-width: 768px) {
+        .page-header { height: 250px; }
+        .page-header h1 { font-size: 2rem; }
+        .page-header p { font-size: 1rem; }
+        }
+        /* ==================== 🦶 Footer ==================== */
+        footer { text-align: center; padding: 30px; color: var(--text-light); border-top: 1px solid var(--card-border); font-size: 0.9rem; transition: var(--transition); }
+    </style>
+</head>
+<body data-theme="light">
+
+    <header>
+        <div class="nav-container">
+            <a href="index.html" class="logo">
+                <i class="fa-solid fa-water"></i> Songkhla Vibe
+            </a>
+            <ul class="nav-menu" id="navMenu">
+                <li><a href="index.html" class="nav-link active" id="menuHome">หน้าแรก</a></li>
+                <li><a href="smart-travel.html" class="nav-link" id="menuSmartTravel">พิกัดเที่ยวอัจฉริยะ</a></li>
+                <li><a href="attractions.html" class="nav-link" id="menuAttractions">สถานที่ท่องเที่ยว</a></li>
+                <li><a href="about.html" class="nav-link active" id="menuAbout">ประวัติเมือง</a></li>
+                <li><a href="contact.html" class="nav-link" id="menuContact">ติดต่อเรา</a></li>
+            </ul>
+            <div class="nav-controls">
+                <button class="theme-toggle" id="themeToggleBtn" onclick="toggleTheme()" title="เปลี่ยนโหมดหน้าจอ">
+                    <i class="fa-solid fa-moon" id="themeIcon"></i>
+                </button>
+                <button class="lang-toggle"><span>EN</span></button>
+                <button class="mobile-menu-btn" onclick="toggleMobileMenu()"><i class="fa-solid fa-bars"></i></button>
+            </div>
+        </div>
+    </header>
+            <div class="page-header">
+                <h1>วิทยาลัยอาชีวศึกษาสงขลา</h1>
+                <p>สถาบันแห่งการสร้างทักษะฝีมือ เพื่อก้าวสู่โลกอาชีพอย่างมั่นคง</p>
+            </div>
+
+    <main class="contact-container">
+        
+        <section class="contact-map-side">
+            <div id="contact-map"></div>
+        </section>
+
+        <section class="contact-info-side">
+            <h2 style="font-size: 1.5rem; margin-bottom: 10px; color: var(--text-dark);">ช่องทางการติดต่อ</h2>
+            
+            <div class="info-item">
+                <i class="fa-solid fa-location-dot"></i>
+                <div class="info-text">
+                    <p>74 ถ.รามวิถี ต.บ่อยาง อ.เมือง จ.สงขลา 90000</p>
+                </div>
+            </div>
+
+            <div class="info-item">
+                <i class="fa-solid fa-phone"></i>
+                <div class="info-text">
+                    <p>Tel : 0-74-311-202</p>
+                </div>
+            </div>
+
+            <div class="info-item">
+                <i class="fa-solid fa-envelope"></i>
+                <div class="info-text">
+                    <p>songkhla03@vec.mail.go.th</p>
+                </div>
+            </div>
+
+            <div class="divider"></div>
+
+            <div class="business-hours">
+                <h5>เวลาทำการ : จันทร์ - ศุกร์ </h5>
+                <p>08:30 น. – 17:00 น.</p>
+                <p style="color: var(--primary-blue); font-weight: 500; margin-top: 4px; font-size: 0.85rem;">*เวลาเข้าเรียนของนักเรียนนักศึกษา</p>
+            </div>
+
+            <div class="rules">
+                <h5>ข้อห้ามในการเข้าชมสถานที่ :</h5>
+                <ul>
+                    <li>1. ห้ามสูบบุหรี่ หรือทิ้งขยะไม่เป็นที่ภายในบริเวณศูนย์บริการ</li>
+                    <li>2. กรุณารักษากฎระเบียบและไม่ส่งเสียงดังรบกวนผู้อื่น</li>
+                </ul>
+            </div>
+        </section>
+
+    </main>
+
+    <section class="team-container" id="team">
+        <h3 class="team-title">
+            <i class="fa-solid fa-star"></i> ผู้จัดทำ
+        </h3>
+        <div class="team-list">
+            <div class="team-item">
+                <span class="team-number">1</span>
+                <span class="team-name">นายฐิติพงศ์ พันธ์ยักษ์</span>
+                <span class="team-id">ปวช.2/2 ทธด. 032</span>
+            </div>
+            <div class="team-item">
+                <span class="team-number">2</span>
+                <span class="team-name">นายพีรพัทธ์ พรมทอง</span>
+                <span class="team-id">ปวช.2/2 ทธด. 035</span>
+            </div>
+            <div class="team-item">
+                <span class="team-number">3</span>
+                <span class="team-name">นายมาติล มูซอ</span>
+                <span class="team-id">ปวช.2/2 ทธด. 038</span>
+            </div>
+            <div class="team-item">
+                <span class="team-number">4</span>
+                <span class="team-name">นายฮัมดาน ช่างดี</span>
+                <span class="team-id">ปวช.2/2 ทธด. 044</span>
+            </div>
+            <div class="team-item">
+                <span class="team-number">5</span>
+                <span class="team-name">นายอัครเดช ขาววงค์</span>
+                <span class="team-id">ปวช.2/2 ทธด. 042</span>
+            </div>
+        </div>
+        <p class="team-footer-text">วิทยาลัยอาชีวศึกษาสงขลา</p>
+    </section>
+
+    <footer>
+        <p>© 2026 Songkhla Vibe - วิทยาลัยอาชีวศึกษาสงขลา. All Rights Reserved. <br>โดย นายฐิติพงษ์ พันธ์ยักษ์ ปวช.2/2 เทคโนโลยีธุรกิจดิจิทัล</p>
+    </footer>
+
+    <div class="floating-chat-widget" id="chatWidget">
+        <div class="chat-window">
+            <div class="chat-header">
+                <h4>👨🏻‍🦱 Thitipong AI Guide</h4>
+                <button onclick="toggleChat()" title="ปิดแชท"><i class="fa-solid fa-xmark"></i></button>
+            </div>
+            <div class="chat-messages" id="chatMessages">
+                </div>
+            <div class="chat-input-area">
+                <input type="text" class="chat-input" id="userInput" placeholder="พิมพ์ถามคำถามที่นี่...">
+                <button class="send-btn" id="sendBtn"><i class="fa-solid fa-paper-plane"></i></button>
+            </div>
+        </div>
+        <button class="chat-trigger-btn" onclick="toggleChat()" title="คุยกับไกด์"><i class="fa-solid fa-comments" id="chatIcon"></i></button>
+    </div>
+
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
+    
+    <script src="config.js"></script>
+    <script>
+        // ==================== 1. ระบบควบคุม Theme & Navbar ====================
+        function initTheme() {
+            const savedTheme = localStorage.getItem('theme') || 'light';
+            document.documentElement.setAttribute('data-theme', savedTheme);
+            document.getElementById('themeIcon').className = savedTheme === 'dark' ? 'fa-solid fa-sun' : 'fa-solid fa-moon';
+        }
+
+        function toggleTheme() {
+            const currentTheme = document.documentElement.getAttribute('data-theme') || 'light';
+            const newTheme = currentTheme === 'light' ? 'dark' : 'light';
+            document.documentElement.setAttribute('data-theme', newTheme);
+            document.getElementById('themeIcon').className = newTheme === 'dark' ? 'fa-solid fa-sun' : 'fa-solid fa-moon';
+            localStorage.setItem('theme', newTheme);
+        }
+
+        function toggleMobileMenu() {
+            document.getElementById('navMenu').classList.toggle('active');
+        }
+
+        // ==================== 2. แผนที่ Leaflet ====================
+        const officeLat = 7.193563;
+        const officeLng = 100.594491;
+
+        window.onload = function() {
+            initTheme(); // โหลดธีมที่บันทึกไว้
+            
+            // ตั้งค่าแผนที่
+            const contactMap = L.map('contact-map').setView([officeLat, officeLng], 15);
+            L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+                attribution: '© OpenStreetMap contributors'
+            }).addTo(contactMap);
+            L.marker([officeLat, officeLng]).addTo(contactMap).bindPopup("<b>ศูนย์บริการ Songkhla Vibe</b><br>วิทยาลัยอาชีวศึกษาสงขลา").openPopup();
+
+            // ข้อความต้อนรับของ AI
+            appendMessage("ยินดีต้อนรับสู่หน้าติดต่อเราครับ! ผมคือ <b>Thitipong AI Guide</b> หากคุณมีคำถามเรื่องเส้นทางมาวิทยาลัยอาชีวศึกษาสงขลา หรือต้องการให้ช่วยวางแผนเดินทาง พิมพ์ถามผมตรงนี้ได้เลยนะครับ!", "ai-message");
+        }
+
+        // ==================== 3. ระบบแชท AI (Floating) ====================
+        function toggleChat() {
+            const widget = document.getElementById('chatWidget');
+            const icon = document.getElementById('chatIcon');
+            widget.classList.toggle('open');
+            icon.className = widget.classList.contains('open') ? 'fa-solid fa-xmark' : 'fa-solid fa-comments';
+            if(widget.classList.contains('open')) scrollToBottom();
+        }
+
+        const chatMessages = document.getElementById('chatMessages');
+        const userInput = document.getElementById('userInput');
+        const sendBtn = document.getElementById('sendBtn');
+
+        function scrollToBottom() {
+            chatMessages.scrollTop = chatMessages.scrollHeight;
+        }
+
+        function appendMessage(text, className, id = null) {
+            const msgDiv = document.createElement('div');
+            msgDiv.className = `message ${className}`;
+            if (id) msgDiv.id = id;
+            msgDiv.innerHTML = text;
+            chatMessages.appendChild(msgDiv);
+            scrollToBottom();
+        }
+
+        async function handleSendMessage() {
+            const text = userInput.value.trim();
+            if(!text) return;
+
+            appendMessage(text, 'user-message');
+            userInput.value = '';
+
+            const typingId = 'typing-' + Date.now();
+            appendMessage('<i class="fa-solid fa-spinner fa-spin"></i> กำลังประมวลผล...', 'ai-message', typingId);
+
+            try {
+                const response = await fetch(API_BASE_URL + '/api/chat', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ message: text })
+                });
+                const data = await response.json();
+                document.getElementById(typingId).remove();
+                appendMessage(data.reply, 'ai-message');
+            } catch (e) {
+                document.getElementById(typingId).remove();
+                appendMessage('⚠️ ไม่สามารถเชื่อมต่อกับ AI ได้ กรุณาตรวจสอบว่าเซิร์ฟเวอร์เปิดใช้งานอยู่', 'ai-message');
+            }
+        }
+
+        sendBtn.addEventListener('click', handleSendMessage);
+        userInput.addEventListener('keypress', (e) => { if(e.key === 'Enter') handleSendMessage(); });
+    </script>
+</body>
+</html>

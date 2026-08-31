@@ -1,0 +1,504 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ประวัติจังหวัดสงขลา - Songkhla Vibe</title>
+
+    <link href="https://fonts.googleapis.com/css2?family=Prompt:wght@300;400;500;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="icon" href="images/songkhla1.png">
+
+    <style>
+        /* ==================== 🛠️ CSS Variables สำหรับสลับโหมด (เหมือนหน้าแรกทุกอย่าง) ==================== */
+        :root {
+            --bg-color: #F8FAFC;
+            --primary-blue: #1E40AF;
+            --secondary-blue: #60A5FA;
+            --text-dark: #1E293B;
+            --text-light: #64748B;
+            --white: #FFFFFF;
+            --card-border: #F1F5F9;
+            --nav-bg: rgba(255, 255, 255, 0.9);
+            --transition: all 0.3s ease-in-out;
+            --shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1), 0 8px 10px -6px rgba(0, 0, 0, 0.1);
+        }
+
+        [data-theme="dark"] {
+            --bg-color: #0F172A;
+            --primary-blue: #3B82F6;
+            --secondary-blue: #93C5FD;
+            --text-dark: #F1F5F9;
+            --text-light: #94A3B8;
+            --white: #1E293B;
+            --card-border: #334155;
+            --nav-bg: rgba(15, 23, 42, 0.9);
+            --shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.3), 0 10px 10px -5px rgba(0, 0, 0, 0.3);
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Prompt', sans-serif; }
+        html { scroll-behavior: smooth; scroll-padding-top: 88px; }
+        body { background-color: var(--bg-color); color: var(--text-dark); transition: var(--transition); overflow-x: hidden; -webkit-font-smoothing: antialiased; text-rendering: optimizeLegibility; }
+
+        /* ==================== 🗺️ การตกแต่งแถบเมนู (Navbar) ==================== */
+        header { position: fixed; top: 0; left: 0; width: 100%; background-color: color-mix(in srgb, var(--nav-bg) 88%, transparent); backdrop-filter: blur(18px) saturate(135%); -webkit-backdrop-filter: blur(18px) saturate(135%); border-bottom: 1px solid var(--card-border); box-shadow: 0 8px 30px rgba(15, 23, 42, 0.06); z-index: 1000; transition: var(--transition); }
+        .nav-container { max-width: 1200px; margin: 0 auto; padding: 1rem 2rem; min-height: 72px; display: flex; justify-content: space-between; align-items: center; }
+        .logo { font-size: 1.4rem; font-weight: 600; color: var(--primary-blue); text-decoration: none; display: flex; align-items: center; gap: 0.5rem; transition: transform .35s cubic-bezier(.22,1,.36,1); }
+        .logo:hover { transform: translateY(-2px); }
+        .nav-menu { display: flex; align-items: center; gap: 2rem; list-style: none; }
+        .nav-link { position: relative; color: var(--text-dark); text-decoration: none; font-size: 1rem; font-weight: 400; padding: .45rem .1rem; transition: var(--transition); }
+        .nav-link:hover, .nav-link.active { color: var(--primary-blue); }
+        .nav-link::after { content: ""; position: absolute; left: 50%; bottom: -3px; width: 0; height: 2px; border-radius: 999px; background: var(--primary-blue); transform: translateX(-50%); transition: width .35s cubic-bezier(.22,1,.36,1); }
+        .nav-link:hover::after, .nav-link.active::after { width: 70%; }
+
+        .nav-controls { display: flex; align-items: center; gap: 1rem; }
+        .theme-toggle, .lang-toggle { background: none; border: 1px solid var(--card-border); color: var(--text-dark); padding: 0.5rem 0.8rem; border-radius: 8px; cursor: pointer; font-size: 0.9rem; display: flex; align-items: center; gap: 0.4rem; transition: transform .3s cubic-bezier(.22,1,.36,1), border-color .3s ease, color .3s ease, box-shadow .3s ease; background-color: var(--white); }
+        .theme-toggle:hover, .lang-toggle:hover { border-color: var(--primary-blue); color: var(--primary-blue); transform: translateY(-2px); box-shadow: 0 8px 20px rgba(30, 64, 175, .10); }
+
+        .mobile-menu-btn { display: none; background: none; border: none; color: var(--text-dark); font-size: 1.4rem; cursor: pointer; }
+        @media (max-width: 768px) {
+            .mobile-menu-btn { display: block; }
+            .nav-container { min-height: 68px; }
+            .nav-menu { position: fixed; top: 70px; left: -100%; width: 100%; height: calc(100vh - 70px); background-color: var(--bg-color); flex-direction: column; align-items: center; padding-top: 3rem; gap: 2.5rem; transition: 0.3s ease-in-out; border-top: 1px solid var(--card-border); }
+            .nav-menu.active { left: 0; }
+            .lang-toggle span { display: none; }
+        }
+
+        /* ==================== PAGE BANNER (แทน Hero) ==================== */
+        .page-banner { padding: 150px 1.5rem 3.5rem 1.5rem; text-align: center; color: #fff; background: linear-gradient(135deg, var(--primary-blue), var(--secondary-blue)); }
+        .page-banner h1 { font-size: 2.4rem; font-weight: 600; letter-spacing: -.02em; margin-bottom: .75rem; text-shadow: 0 4px 15px rgba(0,0,0,0.25); }
+        .page-banner p { max-width: 700px; margin: 0 auto; font-size: 1.05rem; font-weight: 300; opacity: .95; text-shadow: 0 2px 10px rgba(0,0,0,0.2); }
+        @media (max-width: 768px) { .page-banner { padding: 130px 1.25rem 2.5rem 1.25rem; } .page-banner h1 { font-size: 1.9rem; } .page-banner p { font-size: .95rem; } }
+
+        /* ==================== MAIN LAYOUT ==================== */
+        .main-layout { max-width: 1000px; margin: 2rem auto; padding: 1rem 1.5rem; display: flex; flex-direction: column; gap: 2.75rem; }
+        .section-title { font-size: 1.6rem; color: var(--primary-blue); margin-bottom: .25rem; display: flex; align-items: center; gap: 10px; font-weight: 600; position: relative; padding-left: .1rem; }
+        .section-title i { transition: transform .35s cubic-bezier(.22,1,.36,1); }
+        .section-title:hover i { transform: translateY(-2px) rotate(-4deg); }
+        .section-desc { color: var(--text-light); font-size: .95rem; margin-bottom: 1.25rem; max-width: 720px; line-height: 1.8; }
+
+        /* ==================== ที่มาของชื่อ ==================== */
+        .name-origin-box { background: linear-gradient(135deg, var(--primary-blue), var(--secondary-blue)); border-radius: 20px; padding: 2rem 2.25rem; color: #fff; box-shadow: 0 18px 40px rgba(30, 64, 175, .22); display: flex; align-items: flex-start; gap: 1.25rem; }
+        .name-origin-box i { font-size: 1.8rem; margin-top: 4px; opacity: .9; }
+        .name-origin-box h3 { font-size: 1.15rem; font-weight: 600; margin-bottom: .5rem; }
+        .name-origin-box p { font-size: .95rem; line-height: 1.8; opacity: .96; font-weight: 300; }
+        .name-origin-box .origin-chain { display: flex; flex-wrap: wrap; align-items: center; gap: .5rem; margin-top: 1rem; font-size: .9rem; }
+        .origin-chain span { background: rgba(255,255,255,.16); padding: .35rem .85rem; border-radius: 20px; font-weight: 500; backdrop-filter: blur(4px); }
+        .origin-chain i { font-size: .8rem; opacity: .8; margin: 0; }
+
+        /* ==================== Timeline ==================== */
+        .timeline { position: relative; padding-left: 2.25rem; }
+        .timeline::before { content: ""; position: absolute; left: 9px; top: 6px; bottom: 6px; width: 2px; background: linear-gradient(to bottom, var(--primary-blue), var(--card-border)); border-radius: 2px; }
+
+        .timeline-item { position: relative; padding-bottom: 2.25rem; opacity: 0; transform: translateY(20px); transition: transform .6s cubic-bezier(.22,1,.36,1), opacity .6s ease; }
+        .timeline-item.in-view { opacity: 1; transform: translateY(0); }
+        .timeline-item:last-child { padding-bottom: 0; }
+
+        .timeline-dot { position: absolute; left: -2.25rem; top: 4px; width: 20px; height: 20px; border-radius: 50%; background: var(--white); border: 3px solid var(--primary-blue); box-shadow: 0 4px 10px rgba(30, 64, 175, .18); display: flex; align-items: center; justify-content: center; }
+        .timeline-dot i { font-size: .55rem; color: var(--primary-blue); }
+
+        .timeline-card { background-color: var(--white); border: 1px solid var(--card-border); border-radius: 16px; padding: 1.4rem 1.6rem; box-shadow: 0 8px 24px rgba(15, 23, 42, .045), 0 1px 3px rgba(15, 23, 42, .03); transition: transform .4s cubic-bezier(.22,1,.36,1), box-shadow .4s ease, border-color .3s ease; }
+        .timeline-card:hover { transform: translateY(-4px); box-shadow: 0 18px 36px rgba(15, 23, 42, .09); border-color: var(--primary-blue); }
+        .timeline-era { display: inline-block; background-color: rgba(30, 64, 175, .1); color: var(--primary-blue); font-size: .78rem; font-weight: 600; padding: .3rem .75rem; border-radius: 20px; margin-bottom: .6rem; }
+        [data-theme="dark"] .timeline-era { background-color: rgba(59, 130, 246, .18); }
+        .timeline-title { font-size: 1.1rem; font-weight: 600; margin-bottom: .5rem; color: var(--text-dark); }
+        .timeline-text { font-size: .92rem; color: var(--text-light); line-height: 1.8; }
+
+        /* ==================== ปัจจุบัน ==================== */
+        .present-section { background-color: var(--white); border-radius: 20px; padding: 2.1rem 2.25rem; border: 1px solid var(--card-border); box-shadow: 0 10px 30px rgba(15, 23, 42, .055), 0 2px 6px rgba(15, 23, 42, .025); transition: box-shadow .4s ease; }
+        .present-section:hover { box-shadow: 0 18px 45px rgba(15, 23, 42, .08), 0 4px 10px rgba(15, 23, 42, .03); }
+        .present-section h3 { font-size: 1.2rem; font-weight: 600; margin-bottom: .75rem; color: var(--primary-blue); display: flex; align-items: center; gap: 10px; }
+        .present-section p { font-size: .95rem; color: var(--text-light); line-height: 1.85; margin-bottom: .9rem; }
+        .present-section p:last-child { margin-bottom: 0; }
+
+        .back-home-wrap { text-align: center; }
+        .back-home-btn { display: inline-flex; align-items: center; gap: 8px; padding: .85rem 1.75rem; background-color: var(--white); color: var(--primary-blue); border: 1px solid var(--card-border); border-radius: 30px; text-decoration: none; font-weight: 500; box-shadow: 0 4px 12px rgba(15, 23, 42, .035); transition: transform .3s cubic-bezier(.22,1,.36,1), box-shadow .3s ease, border-color .3s ease; }
+        .back-home-btn:hover { transform: translateY(-2px); border-color: var(--primary-blue); box-shadow: 0 9px 22px rgba(30, 64, 175, .16); }
+
+        /* ==================== 💬 FLOATING AI CHAT WIDGET ==================== */
+        .floating-chat-widget { position: fixed; bottom: 2rem; right: 2rem; z-index: 2000; display: block; filter: drop-shadow(0 12px 28px rgba(15, 23, 42, .10)); }
+
+        .chat-trigger-btn { width: 65px; height: 65px; border-radius: 50%; background-color: var(--primary-blue); color: white; border: none; cursor: pointer; box-shadow: 0 12px 30px rgba(30, 64, 175, .22), 0 3px 8px rgba(15, 23, 42, .08); display: flex; align-items: center; justify-content: center; font-size: 1.8rem; transition: transform .4s cubic-bezier(.22,1,.36,1), background-color 0.2s, box-shadow .3s ease; position: relative; z-index: 2002; }
+        .chat-trigger-btn:hover { transform: scale(1.08) translateY(-2px); background-color: var(--secondary-blue); box-shadow: 0 18px 38px rgba(30, 64, 175, .27), 0 5px 10px rgba(15, 23, 42, .09); }
+        .chat-trigger-btn i { transition: transform 0.3s ease; }
+
+        .chat-window { position: absolute; bottom: 0; right: 0; width: 370px; height: 500px; background-color: var(--white); border-radius: 20px; border: 1px solid var(--card-border); box-shadow: 0 28px 70px rgba(15, 23, 42, .18), 0 6px 18px rgba(15, 23, 42, .08); display: flex; flex-direction: column; overflow: hidden; transform: scale(0.1) translateY(40px); transform-origin: bottom right; opacity: 0; pointer-events: none; transition: transform 0.4s cubic-bezier(0.34, 1.56, 0.64, 1), opacity 0.2s; z-index: 2001; }
+
+        .floating-chat-widget.open .chat-window { transform: scale(1) translateY(0); opacity: 1; pointer-events: auto; }
+        .floating-chat-widget.open .chat-trigger-btn { background-color: #EF4444; box-shadow: none; position: absolute; bottom: unset; top: 7px; right: 12px; width: 40px; height: 40px; font-size: 1.2rem; }
+
+        @media (max-width: 480px) {
+            .floating-chat-widget { bottom: 1rem; right: 1rem; left: 1rem; filter: none; }
+            .chat-window { width: 100%; height: calc(100vh - 120px); }
+            .floating-chat-widget.open .chat-trigger-btn { top: 12px; right: 16px; }
+            .chat-trigger-btn { box-shadow: 0 10px 24px rgba(30, 64, 175, .22); }
+        }
+
+        .chat-header { padding: 1.1rem 1.5rem; border-bottom: 1px solid var(--card-border); display: flex; align-items: center; justify-content: space-between; background-color: var(--white); }
+        .chat-header-left { display: flex; align-items: center; gap: 0.75rem; }
+        .chat-status { width: 9px; height: 9px; background-color: #10B981; border-radius: 50%; box-shadow: 0 0 0 3px rgba(16, 185, 129, 0.2); }
+        .chat-title { font-weight: 600; font-size: 1rem; margin-right: 45px; }
+
+        .chat-messages { flex-grow: 1; padding: 1.5rem; overflow-y: auto; display: flex; flex-direction: column; gap: 1rem; background-color: var(--bg-color); }
+        .message { max-width: 85%; padding: 0.75rem 1rem; border-radius: 16px; font-size: 0.9rem; line-height: 1.5; word-wrap: break-word; animation: messageIn .3s cubic-bezier(.22,1,.36,1) both; }
+        .user-message { background-color: var(--primary-blue); color: white; align-self: flex-end; border-bottom-right-radius: 4px; box-shadow: 0 2px 5px rgba(30, 64, 175, 0.1); }
+        .ai-message a { display: inline-flex; align-items: center; gap: 6px; margin-top: 8px; padding: 6px 14px; background-color: var(--white); color: var(--primary-blue); border: 1px solid #CBD5E1; border-radius: 8px; text-decoration: none; font-size: 0.85rem; font-weight: 500; transition: var(--transition); }
+        .ai-message a:hover { background-color: #F1F5F9; border-color: var(--primary-blue); color: var(--primary-blue); transform: translateY(-1px); }
+        .chat-input-area { padding: 1rem; border-top: 1px solid var(--card-border); display: flex; gap: 0.5rem; background-color: var(--white); }
+        .chat-input { flex-grow: 1; border: 1px solid var(--card-border); padding: 0.75rem 1rem; border-radius: 12px; font-size: 0.9rem; outline: none; background-color: var(--bg-color); color: var(--text-dark); transition: var(--transition); }
+        .chat-input:focus { border-color: var(--primary-blue); background-color: var(--white); }
+        .send-btn { background-color: var(--primary-blue); color: white; border: none; width: 45px; height: 45px; border-radius: 12px; cursor: pointer; display: flex; align-items: center; justify-content: center; font-size: 1rem; box-shadow: 0 7px 16px rgba(30, 64, 175, .13); transition: var(--transition); }
+        .send-btn:hover { opacity: 0.9; transform: translateY(-2px); box-shadow: 0 10px 20px rgba(30, 64, 175, .18); }
+
+        footer { text-align: center; padding: 2.5rem 2rem; color: var(--text-light); border-top: 1px solid var(--card-border); margin-top: 40px; font-size: 0.9rem; }
+
+        :focus-visible { outline: 3px solid var(--secondary-blue); outline-offset: 3px; }
+
+        @keyframes messageIn { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: translateY(0); } }
+
+        @media (prefers-reduced-motion: reduce) {
+            *, *::before, *::after { scroll-behavior: auto !important; animation-duration: .01ms !important; animation-iteration-count: 1 !important; transition-duration: .01ms !important; }
+        }
+
+        @media (max-width: 768px) {
+            .timeline { padding-left: 1.9rem; }
+            .timeline-dot { left: -1.9rem; }
+            .name-origin-box { flex-direction: column; padding: 1.6rem; }
+        }
+    </style>
+</head>
+
+<body data-theme="light">
+
+    <header>
+        <div class="nav-container">
+            <a href="index.html" class="logo">
+                <i class="fa-solid fa-water"></i> Songkhla Vibe
+            </a>
+
+            <ul class="nav-menu" id="navMenu">
+                <li><a href="index.html" class="nav-link" id="menuHome">หน้าแรก</a></li>
+                <li><a href="smart-travel.html" class="nav-link" id="menuSmartTravel">พิกัดเที่ยวอัจฉริยะ</a></li>
+                <li><a href="attractions.html" class="nav-link" id="menuAttractions">สถานที่ท่องเที่ยว</a></li>
+                <li><a href="about.html" class="nav-link active" id="menuAbout">ประวัติเมือง</a></li>
+                <li><a href="contact.html" class="nav-link" id="menuContact">ติดต่อเรา</a></li>
+            </ul>
+
+            <div class="nav-controls">
+                <button class="theme-toggle" id="themeToggleBtn" onclick="toggleTheme()" title="เปลี่ยนโหมดหน้าจอ">
+                    <i class="fa-solid fa-moon" id="themeIcon"></i>
+                </button>
+                <button class="lang-toggle" id="langToggle" onclick="changeLanguage()">
+                    <i class="fa-solid fa-earth-americas"></i> <span>EN</span>
+                </button>
+                <button class="mobile-menu-btn" onclick="toggleMobileMenu()">
+                    <i class="fa-solid fa-bars" id="menuIcon"></i>
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <section class="page-banner">
+        <h1 id="pageTitle"><i class="fa-solid fa-scroll"></i> ประวัติศาสตร์เมืองสงขลา</h1>
+        <p id="pageDesc">เมืองท่าสองทะเลที่มีเรื่องราวสืบต่อกันมาตั้งแต่ยุคก่อนประวัติศาสตร์ ผ่านยุคศรีวิชัย เมืองซิงกอรา จนถึงการสถาปนาเป็นจังหวัดสงขลาในปัจจุบัน</p>
+    </section>
+
+    <main class="main-layout">
+
+        <div class="name-origin-box">
+            <i class="fa-solid fa-quote-left"></i>
+            <div>
+                <h3>ที่มาของชื่อ "สงขลา"</h3>
+                <p id="originText">ชื่อ "สงขลา" เพี้ยนเสียงมาจากคำว่า "สิงหนคร" ตามพระบรมราชวินิจฉัยของพระบาทสมเด็จพระจุลจอมเกล้าเจ้าอยู่หัว เนื่องจากชาวมลายูถิ่นออกเสียงพยางค์ท้ายและตัวอักษรบางตัวไม่ถนัดปาก จึงตัดและกร่อนเสียงลงเรื่อย ๆ จนกลายเป็นคำที่ฟังคุ้นหูอย่างที่เรียกกันในปัจจุบัน</p>
+                <div class="origin-chain" id="originChain">
+                    <span>สิงหนคร</span>
+                    <i class="fa-solid fa-arrow-right"></i>
+                    <span>สิงคะรา</span>
+                    <i class="fa-solid fa-arrow-right"></i>
+                    <span>ซิงกอรา (Singora)</span>
+                    <i class="fa-solid fa-arrow-right"></i>
+                    <span>สงขลา</span>
+                </div>
+            </div>
+        </div>
+
+        <div>
+            <h2 class="section-title"><i class="fa-solid fa-timeline"></i> เส้นทางประวัติศาสตร์</h2>
+            <p class="section-desc" id="timelineDesc">จากชุมชนโบราณริมทะเลสาบ สู่เมืองท่าค้าขายนานาชาติ และเมืองหลวงของเจ้าเมืองตระกูล ณ สงขลา ก่อนจะกลายเป็นจังหวัดสงขลาอย่างที่เรารู้จักกันทุกวันนี้</p>
+
+            <div class="timeline" id="historyTimeline">
+                <div class="timeline-item">
+                    <div class="timeline-dot"><i class="fa-solid fa-circle"></i></div>
+                    <div class="timeline-card">
+                        <span class="timeline-era">ยุคก่อนประวัติศาสตร์</span>
+                        <h3 class="timeline-title">ชุมชนโบราณลุ่มทะเลสาบสงขลา</h3>
+                        <p class="timeline-text">หลักฐานทางโบราณคดี เช่น ขวานหินที่พบในเขตอำเภอสทิงพระ บ่งชี้ว่าพื้นที่รอบทะเลสาบสงขลามีผู้คนตั้งถิ่นฐานมายาวนานนับพันปีก่อนจะเข้าสู่ยุคประวัติศาสตร์</p>
+                    </div>
+                </div>
+
+                <div class="timeline-item">
+                    <div class="timeline-dot"><i class="fa-solid fa-circle"></i></div>
+                    <div class="timeline-card">
+                        <span class="timeline-era">ราวพุทธศตวรรษที่ 13–18</span>
+                        <h3 class="timeline-title">ยุคเมืองสทิงพระ ภายใต้อิทธิพลศรีวิชัย</h3>
+                        <p class="timeline-text">เมืองสทิงพระเจริญรุ่งเรืองในฐานะศูนย์กลางที่รับวัฒนธรรมอินเดียผ่านเครือข่ายอาณาจักรศรีวิชัยโดยตรง เชื่อกันว่าดินแดนแถบนี้คือถิ่นที่พระภิกษุจีนเคยกล่าวถึงในบันทึกการเดินทางโบราณ</p>
+                    </div>
+                </div>
+
+                <div class="timeline-item">
+                    <div class="timeline-dot"><i class="fa-solid fa-circle"></i></div>
+                    <div class="timeline-card">
+                        <span class="timeline-era">ราวพุทธศตวรรษที่ 19–20</span>
+                        <h3 class="timeline-title">เมืองพัทลุงที่สทิงพระ-พะโคะ</h3>
+                        <p class="timeline-text">หลังอยุธยาแผ่อิทธิพลลงมาถึงคาบสมุทร เมืองสทิงพระเสื่อมอำนาจและเปลี่ยนชื่อเป็นเมืองพัทลุง ก่อนที่ศูนย์กลางอำนาจในแถบนี้จะค่อย ๆ ย้ายไปยังพื้นที่ใกล้เคียงตามยุคสมัย</p>
+                    </div>
+                </div>
+
+                <div class="timeline-item">
+                    <div class="timeline-dot"><i class="fa-solid fa-circle"></i></div>
+                    <div class="timeline-card">
+                        <span class="timeline-era">กลางพุทธศตวรรษที่ 22 – ต้นศตวรรษที่ 23</span>
+                        <h3 class="timeline-title">ยุครุ่งเรืองของเมืองซิงกอรา (หัวเขาแดง)</h3>
+                        <p class="timeline-text">เมืองสงขลาเก่าที่หัวเขาแดง ปรากฏชื่อในเอกสารต่างชาติว่า "Singora" ก่อตั้งโดยดาโต๊ะโมกอล และปกครองต่อโดยสุลต่านสุลัยมานและสุลต่านมุสตาฟา ผู้ชำนาญทั้งด้านการค้าและการป้องกันเมือง ทำให้ซิงกอรากลายเป็นเมืองท่าที่พ่อค้าชาวยุโรป เช่น ชาวฮอลันดา เดินทางเข้ามาติดต่อค้าขายอย่างคึกคัก</p>
+                    </div>
+                </div>
+
+                <div class="timeline-item">
+                    <div class="timeline-dot"><i class="fa-solid fa-circle"></i></div>
+                    <div class="timeline-card">
+                        <span class="timeline-era">ปลายสมัยอยุธยา</span>
+                        <h3 class="timeline-title">เมืองซิงกอราถูกปราบและย้ายเมือง</h3>
+                        <p class="timeline-text">ในเวลาต่อมากองทัพจากกรุงศรีอยุธยายกมาปราบเมืองซิงกอราจนเสื่อมอำนาจ ผู้คนจึงย้ายศูนย์กลางเมืองไปตั้งถิ่นฐานใหม่ที่บริเวณแหลมสน (ปัจจุบันคือบ้านบ่อเตย อำเภอสิงหนคร) ซึ่งอยู่คนละฟากฝั่งกับตัวเมืองสงขลาในปัจจุบัน</p>
+                    </div>
+                </div>
+
+                <div class="timeline-item">
+                    <div class="timeline-dot"><i class="fa-solid fa-circle"></i></div>
+                    <div class="timeline-card">
+                        <span class="timeline-era">สมัยกรุงธนบุรี (พ.ศ. 2318)</span>
+                        <h3 class="timeline-title">กำเนิดตระกูล "ณ สงขลา"</h3>
+                        <p class="timeline-text">หลังการเสียกรุงศรีอยุธยา สมเด็จพระเจ้ากรุงธนบุรีทรงแต่งตั้งจีนเหยียง แซ่เฮ่า นายอากรรังนกเกาะสี่เกาะห้า ขึ้นเป็นเจ้าเมืองสงขลา พระราชทานนามว่า "หลวงสุวรรณคีรีสมบัติ" นับเป็นต้นตระกูล ณ สงขลา ซึ่งปกครองเมืองสืบทอดกันมาถึง 8 รุ่น ยาวนานเกือบ 130 ปี</p>
+                    </div>
+                </div>
+
+                <div class="timeline-item">
+                    <div class="timeline-dot"><i class="fa-solid fa-circle"></i></div>
+                    <div class="timeline-card">
+                        <span class="timeline-era">รัชกาลที่ 3 แห่งกรุงรัตนโกสินทร์</span>
+                        <h3 class="timeline-title">ย้ายเมืองมาฝั่งบ่อยาง สร้างเมืองใหม่</h3>
+                        <p class="timeline-text">พระบาทสมเด็จพระนั่งเกล้าเจ้าอยู่หัวโปรดเกล้าฯ ให้ย้ายศูนย์กลางเมืองมาฝั่งตำบลบ่อยาง พร้อมสร้างป้อมปราการและกำแพงเมืองใหม่ ใช้เวลาก่อสร้างนานถึง 10 ปี วางรากฐานผังเมืองที่ยังเห็นร่องรอยอยู่ในย่านเมืองเก่าสงขลาจนถึงทุกวันนี้</p>
+                    </div>
+                </div>
+
+                <div class="timeline-item">
+                    <div class="timeline-dot"><i class="fa-solid fa-circle"></i></div>
+                    <div class="timeline-card">
+                        <span class="timeline-era">รัชกาลที่ 4 - รัชกาลที่ 5</span>
+                        <h3 class="timeline-title">เมืองท่าสำคัญของหัวเมืองปักษ์ใต้</h3>
+                        <p class="timeline-text">พระบาทสมเด็จพระจอมเกล้าเจ้าอยู่หัวเสด็จประพาสเมืองสงขลาถึงสองครั้ง สะท้อนความสำคัญของเมืองท่าแห่งนี้ ต่อมาในสมัยรัชกาลที่ 5 สงขลาได้รับเลือกให้เป็นที่ตั้งที่ว่าการมณฑลนครศรีธรรมราช ศูนย์กลางการปกครองหัวเมืองปักษ์ใต้</p>
+                    </div>
+                </div>
+
+                <div class="timeline-item">
+                    <div class="timeline-dot"><i class="fa-solid fa-circle"></i></div>
+                    <div class="timeline-card">
+                        <span class="timeline-era">พ.ศ. 2463 เป็นต้นมา</span>
+                        <h3 class="timeline-title">จากสุขาภิบาลสู่เทศบาลเมืองสงขลา</h3>
+                        <p class="timeline-text">เมืองสงขลาได้รับการยกฐานะเป็นสุขาภิบาลเมืองสงขลา ก่อนจะพัฒนาต่อเนื่องเป็นเทศบาลเมืองสงขลา และเติบโตควบคู่กับการพัฒนาประเทศจนกลายเป็นจังหวัดสงขลาอย่างที่เป็นอยู่ในปัจจุบัน</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="present-section">
+            <h3><i class="fa-solid fa-city"></i> สงขลาในวันนี้</h3>
+            <p id="presentText1">ผ่านมาหลายยุคหลายสมัย สงขลายังคงความสำคัญในฐานะเมืองท่าและศูนย์กลางเศรษฐกิจของภาคใต้ตอนล่าง เป็นจุดหลอมรวมวัฒนธรรมไทย พุทธ จีน และมลายู ที่อยู่ร่วมกันอย่างกลมกลืน</p>
+            <p id="presentText2">ร่องรอยของประวัติศาสตร์ยังปรากฏให้เห็นชัดในย่านเมืองเก่าสงขลา ที่เต็มไปด้วยอาคารสถาปัตยกรรมจีน-โปรตุเกส ศาลเจ้า วัดวาอาราม และป้อมปราการโบราณ ซึ่งปัจจุบันกำลังอยู่ระหว่างการผลักดันให้เป็นพื้นที่มรดกทางวัฒนธรรมที่สำคัญของประเทศ</p>
+        </div>
+
+        <div class="back-home-wrap">
+            <a href="index.html" class="back-home-btn"><i class="fa-solid fa-arrow-left"></i> กลับหน้าแรก</a>
+        </div>
+
+    </main>
+
+    <div class="floating-chat-widget" id="chatWidget">
+        <div class="chat-window">
+            <div class="chat-header">
+                <div class="chat-header-left">
+                    <div class="chat-status"></div>
+                    <div class="chat-title">Thitipong AI Guide</div>
+                </div>
+            </div>
+            <div class="chat-messages" id="chatMessages">
+                <div class="message ai-message">
+                    สวัสดีครับ! ผมคือ <b>Thitipong AI Guide</b> ไกด์ท้องถิ่นของสงขลา 🌊 สามารถสืบค้นข้อมูลที่กินที่เที่ยวอัปเดตใหม่ได้ทันที อยากให้ผมช่วยจัดทริปหรือแนะนำมุมถ่ายรูปสวยๆ พิมพ์มาคุยกันได้เลยครับน่ะ!
+                </div>
+            </div>
+            <div class="chat-input-area">
+                <input type="text" class="chat-input" id="userInput" placeholder="พิมพ์ข้อความคำถามที่นี่...">
+                <button class="send-btn" id="sendBtn"><i class="fa-solid fa-paper-plane"></i></button>
+            </div>
+        </div>
+        <button class="chat-trigger-btn" onclick="toggleChat()" title="คุยกับ AI ไกด์สงขลา">
+            <i class="fa-solid fa-comments" id="chatIcon"></i>
+        </button>
+    </div>
+
+    <footer>
+        <p>© 2026 Songkhla Vibe - วิทยาลัยอาชีวศึกษาสงขลา. All Rights Reserved.</p>
+    </footer>
+
+    <script src="config.js"></script>
+    <script>
+        // ==================== ฟังก์ชันควบคุมกล่องแชททับซ้อน ====================
+        function toggleChat() {
+            const widget = document.getElementById('chatWidget');
+            const icon = document.getElementById('chatIcon');
+            if (!widget) return;
+            widget.classList.toggle('open');
+            if (widget.classList.contains('open')) {
+                if (icon) icon.className = 'fa-solid fa-xmark';
+                setTimeout(() => { document.getElementById('userInput')?.focus(); }, 400);
+            } else {
+                if (icon) icon.className = 'fa-solid fa-comments';
+            }
+        }
+
+        // ==================== การส่งข้อความแชท AI หลังบ้าน ====================
+        const chatMessages = document.getElementById('chatMessages');
+        const userInput = document.getElementById('userInput');
+        const sendBtn = document.getElementById('sendBtn');
+
+        async function handleSendMessage() {
+            if (!userInput || !chatMessages) return;
+            const text = userInput.value.trim();
+            if (!text) return;
+
+            const userDiv = document.createElement('div');
+            userDiv.className = 'message user-message';
+            userDiv.innerText = text;
+            chatMessages.appendChild(userDiv);
+            userInput.value = '';
+            chatMessages.scrollTop = chatMessages.scrollHeight;
+
+            const typingId = 'typing-' + Date.now();
+            const typingDiv = document.createElement('div');
+            typingDiv.className = 'message ai-message';
+            typingDiv.id = typingId;
+            typingDiv.innerHTML = '<i class="fa-solid fa-circle-notch fa-spin"></i> กำลังคิดหาข้อมูล...';
+            chatMessages.appendChild(typingDiv);
+            chatMessages.scrollTop = chatMessages.scrollHeight;
+
+            try {
+                const response = await fetch(API_BASE_URL + '/api/chat', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ message: text })
+                });
+                const data = await response.json();
+                document.getElementById(typingId)?.remove();
+
+                const aiDiv = document.createElement('div');
+                aiDiv.className = 'message ai-message';
+                aiDiv.innerHTML = data.reply;
+                chatMessages.appendChild(aiDiv);
+            } catch (error) {
+                document.getElementById(typingId)?.remove();
+                const errDiv = document.createElement('div');
+                errDiv.className = 'message ai-message';
+                errDiv.innerHTML = '⚠️ ไม่สามารถเชื่อมต่อกับ AI ได้ กรุณาตรวจสอบว่าเซิร์ฟเวอร์เปิดใช้งานอยู่';
+                chatMessages.appendChild(errDiv);
+            }
+            chatMessages.scrollTop = chatMessages.scrollHeight;
+        }
+
+        sendBtn?.addEventListener('click', handleSendMessage);
+        userInput?.addEventListener('keypress', (e) => { if (e.key === 'Enter') handleSendMessage(); });
+
+        // ==================== ฟังก์ชันโหมด/เมนู ====================
+        function initTheme() {
+            const savedTheme = localStorage.getItem('theme') || 'light';
+            document.documentElement.setAttribute('data-theme', savedTheme);
+            const themeIcon = document.getElementById('themeIcon');
+            if (themeIcon) {
+                themeIcon.className = savedTheme === 'dark' ? 'fa-solid fa-sun' : 'fa-solid fa-moon';
+            }
+        }
+
+        function toggleTheme() {
+            const currentTheme = document.documentElement.getAttribute('data-theme') || 'light';
+            const newTheme = currentTheme === 'light' ? 'dark' : 'light';
+            document.documentElement.setAttribute('data-theme', newTheme);
+            localStorage.setItem('theme', newTheme);
+            const themeIcon = document.getElementById('themeIcon');
+            if (themeIcon) {
+                themeIcon.className = newTheme === 'dark' ? 'fa-solid fa-sun' : 'fa-solid fa-moon';
+            }
+        }
+
+        function toggleMobileMenu() {
+            const menu = document.getElementById('navMenu');
+            const menuIcon = document.getElementById('menuIcon');
+            if (menu) {
+                menu.classList.toggle('active');
+                if (menuIcon) {
+                    menuIcon.className = menu.classList.contains('active')
+                        ? 'fa-solid fa-xmark'
+                        : 'fa-solid fa-bars';
+                }
+            }
+        }
+
+        document.addEventListener('DOMContentLoaded', () => {
+            initTheme();
+            initScrollReveal();
+        });
+
+        // ==================== ระบบเปลี่ยนภาษา (ปลอดภัยแม้ไม่มี Hero ในหน้านี้) ====================
+        let currentLang = 'th';
+        function changeLanguage() {
+            currentLang = currentLang === 'th' ? 'en' : 'th';
+            const langSpan = document.getElementById('langToggle')?.querySelector('span');
+            if (langSpan) langSpan.innerText = currentLang === 'th' ? 'EN' : 'TH';
+
+            const pageTitle = document.getElementById('pageTitle');
+            const pageDesc = document.getElementById('pageDesc');
+            if (currentLang === 'en') {
+                if (pageTitle) pageTitle.innerHTML = '<i class="fa-solid fa-scroll"></i> History of Songkhla';
+                if (pageDesc) pageDesc.innerText = "A twin-sea port town with a story stretching from prehistoric settlements through the Srivijaya era and the port city of Singora, to the modern province of Songkhla.";
+            } else {
+                if (pageTitle) pageTitle.innerHTML = '<i class="fa-solid fa-scroll"></i> ประวัติศาสตร์เมืองสงขลา';
+                if (pageDesc) pageDesc.innerText = "เมืองท่าสองทะเลที่มีเรื่องราวสืบต่อกันมาตั้งแต่ยุคก่อนประวัติศาสตร์ ผ่านยุคศรีวิชัย เมืองซิงกอรา จนถึงการสถาปนาเป็นจังหวัดสงขลาในปัจจุบัน";
+            }
+        }
+
+        document.addEventListener('keydown', (event) => {
+            if (event.key === 'Escape') {
+                document.getElementById('chatWidget')?.classList.remove('open');
+                const menu = document.getElementById('navMenu');
+                if (menu) menu.classList.remove('active');
+            }
+        });
+
+        // ==================== Scroll Reveal สำหรับ Timeline ====================
+        function initScrollReveal() {
+            const items = document.querySelectorAll('.timeline-item');
+            if (!items.length) return;
+            if (!('IntersectionObserver' in window)) {
+                items.forEach(el => el.classList.add('in-view'));
+                return;
+            }
+            const observer = new IntersectionObserver((entries) => {
+                entries.forEach((entry) => {
+                    if (entry.isIntersecting) {
+                        entry.target.classList.add('in-view');
+                        observer.unobserve(entry.target);
+                    }
+                });
+            }, { threshold: 0.15 });
+            items.forEach(el => observer.observe(el));
+        }
+    </script>
+</body>
+</html>
