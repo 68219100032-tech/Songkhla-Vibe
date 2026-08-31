@@ -6,7 +6,7 @@
 // ให้แก้ค่าตัวแปร PRODUCTION_API_URL ด้านล่างเป็น URL จริงของคุณ
 // เช่น "https://guidepls-backend.onrender.com"
 
-const PRODUCTION_API_URL = "https://YOUR-BACKEND-URL.onrender.com"; // 👈 แก้ตรงนี้หลัง deploy backend
+const PRODUCTION_API_URL = "https://songkhla-vibe.onrender.com"; // 👈 แก้ตรงนี้หลัง deploy backend
 
 const API_BASE_URL = (() => {
     const host = window.location.hostname;
